@@ -16,7 +16,10 @@
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
         <h6 class="m-0 font-weight-bold text-primary"><?php echo $title; ?></h6>
-        
+        <?php
+        echo "collapsible : ";
+        print_r($collapsible);
+        ?>
         <?php if (isset($collapsible) && $collapsible): ?>
             <div class="dropdown no-arrow">
                 <a class="dropdown-toggle" href="#" role="button" id="dropdownMenu<?php echo $id; ?>"

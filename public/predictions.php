@@ -235,6 +235,7 @@ include __DIR__ . '/../templates/header.php';
                         $chartId = 'predictionConfidenceChart';
                         $title = 'ความเชื่อมั่นของการทำนาย - ' . $digitTypeLabels[$digitalType];
                         $description = 'แสดงระดับความเชื่อมั่นของการทำนายเรียงลำดับจากมากไปน้อย';
+                        $collapsible = true; // Set this to true or false as needed
                         include __DIR__ . '/../templates/components/chart_container.php';
                         
                         // Add JavaScript to create chart

@@ -41,6 +41,46 @@ class PredictionModel
         return $row['total'];
     }
 
+    // In PredictionModel.php, add a new method
+    public function getPredictionsByTargetDrawDate($digitType, $targetDrawDate)
+    {
+        // Query to fetch predictions specifically for the target draw date
+        $sql = "SELECT * FROM lottery_predictions 
+            WHERE digit_type = ? 
+            AND target_draw_date = ? 
+            ORDER BY confidence DESC 
+            LIMIT 6";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ss", $digitType, $targetDrawDate);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $predictions = [];
+        while ($row = $result->fetch_assoc()) {
+            $predictions[] = [
+                'digit' => $row['predicted_digits'],
+                'confidence' => $row['confidence'],
+                'target_draw_date' => $row['target_draw_date']
+            ];
+        }
+
+        // If no existing predictions, you can decide how to handle it
+        if (empty($predictions)) {
+            return [
+                'status' => 'error',
+                'message' => 'ไม่พบการทำนายสำหรับงวดนี้',
+                'predictions' => []
+            ];
+        }
+
+        return [
+            'status' => 'success',
+            'predictions' => $predictions,
+            'target_draw_date' => $targetDrawDate
+        ];
+    }
+
     /**
      * Generate predictions for digit type
      * 

@@ -22,7 +22,7 @@ $statAnalysis = new Models\StatisticalAnalysis($connection);
 
 // Define additional CSS and JS
 $additionalCss = ['public/css/charts.css'];
-$additionalJs = ['public/js/statistics.js', 'assets/js/charts.js'];
+$additionalJs = ['public/js/statistics.js', 'public/js/charts.js'];
 
 // Check for filter parameters
 $filters = [];
