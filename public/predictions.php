@@ -22,7 +22,6 @@ $predictionModel = new Models\PredictionModel($connection);
 
 // Get next draw date
 $nextDrawDate = $lotteryData->getNextDrawDate();
-echo $nextDrawDate;
 $nextDrawDateFormatted = formatThaiDisplayDate($nextDrawDate);
 
 // Check if there's a prediction request

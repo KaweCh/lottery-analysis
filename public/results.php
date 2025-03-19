@@ -17,6 +17,33 @@ require_once __DIR__ . '/../models/LotteryData.php';
 $connection = connectDatabase();
 $lotteryData = new Models\LotteryData($connection);
 
+// Function to convert day display name to database value
+function convertDayOfWeek($displayDayName) {
+    // ตัวช่วยแปลงจากชื่อเต็มเป็นชื่อย่อในฐานข้อมูล
+    $dayMapping = [
+        'วันจันทร์' => 'จันทร์',
+        'วันอังคาร' => 'อังคาร',
+        'วันพุธ' => 'พุธ', 
+        'วันพฤหัสบดี' => 'พฤหัสบดี',
+        'วันศุกร์' => 'ศุกร์',
+        'วันเสาร์' => 'เสาร์',
+        'วันอาทิตย์' => 'อาทิตย์'
+    ];
+    
+    // ถ้ามีการแม็ปไว้ในตาราง ให้ใช้ค่าที่แม็ปไว้
+    if (isset($dayMapping[$displayDayName])) {
+        return $dayMapping[$displayDayName];
+    }
+    
+    // ถ้าไม่มีในตาราง แต่ขึ้นต้นด้วย "วัน" ให้ตัด "วัน" ออก
+    if (mb_substr($displayDayName, 0, 3, 'UTF-8') === 'วัน') {
+        return mb_substr($displayDayName, 3, null, 'UTF-8');
+    }
+    
+    // ถ้าไม่ตรงกับเงื่อนไขไหนเลย ส่งค่าเดิมกลับไป
+    return $displayDayName;
+}
+
 // Handle pagination
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $limit = 20; // Results per page
@@ -39,18 +66,24 @@ if (isset($_GET['end_date']) && !empty($_GET['end_date'])) {
 }
 
 if (isset($_GET['day_of_week']) && !empty($_GET['day_of_week'])) {
-    $filters['day_of_week'] = cleanInput($_GET['day_of_week']);
+    // ใช้ตัวแปรจาก $_GET โดยตรงเพื่อหลีกเลี่ยงปัญหาสระหาย
+    $dayOfWeek = $_GET['day_of_week'];
+    $filters['day_of_week'] = convertDayOfWeek($dayOfWeek);
 }
 
 // Get results
 $resultsData = $lotteryData->getRecords($filters);
 
-// Get total records for pagination
-$totalRecords = $lotteryData->getTotalRecords();
+// Count filtered records for pagination
+$countFilters = $filters;
+unset($countFilters['limit'], $countFilters['offset']); // Remove limit and offset for counting
+$countFilters['count_only'] = true; // Add flag to get count only
+$totalRecords = $lotteryData->getRecordCount($countFilters);
 $totalPages = ceil($totalRecords / $limit);
 
-// Thai days of week
+// Thai days of week with display names
 $thaiDays = [
+    '' => 'ทั้งหมด',
     'จันทร์' => 'วันจันทร์',
     'อังคาร' => 'วันอังคาร',
     'พุธ' => 'วันพุธ',
@@ -59,21 +92,6 @@ $thaiDays = [
     'เสาร์' => 'วันเสาร์',
     'อาทิตย์' => 'วันอาทิตย์'
 ];
-
-// Set page actions
-$pageActions = '
-<div class="btn-group">
-    <button type="button" id="printResults" class="btn btn-outline-primary btn-sm">
-        <i class="fas fa-print mr-1"></i> พิมพ์
-    </button>
-    <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-        <span class="visually-hidden">Toggle Dropdown</span>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="#" id="exportCSV"><i class="fas fa-file-csv mr-1"></i> ส่งออก CSV</a></li>
-        <li><a class="dropdown-item" href="#" id="exportPDF"><i class="fas fa-file-pdf mr-1"></i> ส่งออก PDF</a></li>
-    </ul>
-</div>';
 
 // Additional CSS and JS
 $additionalCss = ['public/css/charts.css'];
@@ -94,9 +112,8 @@ include __DIR__ . '/../templates/header.php';
                 <div class="col-md-3 mb-3">
                     <label for="day_of_week" class="form-label">วันในสัปดาห์</label>
                     <select name="day_of_week" id="day_of_week" class="form-control">
-                        <option value="">ทั้งหมด</option>
                         <?php foreach ($thaiDays as $key => $label): ?>
-                            <option value="<?php echo $key; ?>" <?php echo isset($_GET['day_of_week']) && $_GET['day_of_week'] === $key ? 'selected' : ''; ?>>
+                            <option value="<?php echo $key; ?>" <?php echo isset($_GET['day_of_week']) && convertDayOfWeek($_GET['day_of_week']) === $key ? 'selected' : ''; ?>>
                                 <?php echo $label; ?>
                             </option>
                         <?php endforeach; ?>
@@ -105,13 +122,13 @@ include __DIR__ . '/../templates/header.php';
                 
                 <div class="col-md-3 mb-3">
                     <label for="start_date" class="form-label">วันที่เริ่มต้น</label>
-                    <input type="date" name="start_date" id="start_date" class="form-control datepicker" 
+                    <input type="date" name="start_date" id="start_date" class="form-control" 
                            value="<?php echo isset($_GET['start_date']) ? $_GET['start_date'] : ''; ?>">
                 </div>
                 
                 <div class="col-md-3 mb-3">
                     <label for="end_date" class="form-label">วันที่สิ้นสุด</label>
-                    <input type="date" name="end_date" id="end_date" class="form-control datepicker" 
+                    <input type="date" name="end_date" id="end_date" class="form-control" 
                            value="<?php echo isset($_GET['end_date']) ? $_GET['end_date'] : ''; ?>">
                 </div>
                 
@@ -119,7 +136,7 @@ include __DIR__ . '/../templates/header.php';
                     <button type="submit" class="btn btn-primary me-2">
                         <i class="fas fa-filter me-1"></i> กรองข้อมูล
                     </button>
-                    <button type="reset" class="btn btn-outline-secondary">รีเซ็ต</button>
+                    <button type="button" id="resetFilter" class="btn btn-outline-secondary">รีเซ็ต</button>
                 </div>
             </div>
         </form>
@@ -171,9 +188,9 @@ include __DIR__ . '/../templates/header.php';
                     <ul class="pagination justify-content-center mt-4">
                         <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
                             <a class="page-link" href="?page=<?php echo $page - 1; ?><?php 
-                                echo isset($_GET['day_of_week']) ? '&day_of_week=' . $_GET['day_of_week'] : ''; 
-                                echo isset($_GET['start_date']) ? '&start_date=' . $_GET['start_date'] : ''; 
-                                echo isset($_GET['end_date']) ? '&end_date=' . $_GET['end_date'] : ''; 
+                                echo isset($_GET['day_of_week']) ? '&day_of_week=' . urlencode($_GET['day_of_week']) : ''; 
+                                echo isset($_GET['start_date']) ? '&start_date=' . urlencode($_GET['start_date']) : ''; 
+                                echo isset($_GET['end_date']) ? '&end_date=' . urlencode($_GET['end_date']) : ''; 
                             ?>" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
@@ -185,9 +202,9 @@ include __DIR__ . '/../templates/header.php';
                         
                         if ($startPage > 1) {
                             echo '<li class="page-item"><a class="page-link" href="?page=1' . 
-                                (isset($_GET['day_of_week']) ? '&day_of_week=' . $_GET['day_of_week'] : '') . 
-                                (isset($_GET['start_date']) ? '&start_date=' . $_GET['start_date'] : '') . 
-                                (isset($_GET['end_date']) ? '&end_date=' . $_GET['end_date'] : '') . 
+                                (isset($_GET['day_of_week']) ? '&day_of_week=' . urlencode($_GET['day_of_week']) : '') . 
+                                (isset($_GET['start_date']) ? '&start_date=' . urlencode($_GET['start_date']) : '') . 
+                                (isset($_GET['end_date']) ? '&end_date=' . urlencode($_GET['end_date']) : '') . 
                                 '">1</a></li>';
                             
                             if ($startPage > 2) {
@@ -197,9 +214,9 @@ include __DIR__ . '/../templates/header.php';
                         
                         for ($i = $startPage; $i <= $endPage; $i++) {
                             echo '<li class="page-item ' . ($page == $i ? 'active' : '') . '"><a class="page-link" href="?page=' . $i . 
-                                (isset($_GET['day_of_week']) ? '&day_of_week=' . $_GET['day_of_week'] : '') . 
-                                (isset($_GET['start_date']) ? '&start_date=' . $_GET['start_date'] : '') . 
-                                (isset($_GET['end_date']) ? '&end_date=' . $_GET['end_date'] : '') . 
+                                (isset($_GET['day_of_week']) ? '&day_of_week=' . urlencode($_GET['day_of_week']) : '') . 
+                                (isset($_GET['start_date']) ? '&start_date=' . urlencode($_GET['start_date']) : '') . 
+                                (isset($_GET['end_date']) ? '&end_date=' . urlencode($_GET['end_date']) : '') . 
                                 '">' . $i . '</a></li>';
                         }
                         
@@ -209,18 +226,18 @@ include __DIR__ . '/../templates/header.php';
                             }
                             
                             echo '<li class="page-item"><a class="page-link" href="?page=' . $totalPages . 
-                                (isset($_GET['day_of_week']) ? '&day_of_week=' . $_GET['day_of_week'] : '') . 
-                                (isset($_GET['start_date']) ? '&start_date=' . $_GET['start_date'] : '') . 
-                                (isset($_GET['end_date']) ? '&end_date=' . $_GET['end_date'] : '') . 
+                                (isset($_GET['day_of_week']) ? '&day_of_week=' . urlencode($_GET['day_of_week']) : '') . 
+                                (isset($_GET['start_date']) ? '&start_date=' . urlencode($_GET['start_date']) : '') . 
+                                (isset($_GET['end_date']) ? '&end_date=' . urlencode($_GET['end_date']) : '') . 
                                 '">' . $totalPages . '</a></li>';
                         }
                         ?>
                         
                         <li class="page-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
                             <a class="page-link" href="?page=<?php echo $page + 1; ?><?php 
-                                echo isset($_GET['day_of_week']) ? '&day_of_week=' . $_GET['day_of_week'] : ''; 
-                                echo isset($_GET['start_date']) ? '&start_date=' . $_GET['start_date'] : ''; 
-                                echo isset($_GET['end_date']) ? '&end_date=' . $_GET['end_date'] : ''; 
+                                echo isset($_GET['day_of_week']) ? '&day_of_week=' . urlencode($_GET['day_of_week']) : ''; 
+                                echo isset($_GET['start_date']) ? '&start_date=' . urlencode($_GET['start_date']) : ''; 
+                                echo isset($_GET['end_date']) ? '&end_date=' . urlencode($_GET['end_date']) : ''; 
                             ?>" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
@@ -283,162 +300,50 @@ include __DIR__ . '/../templates/header.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle print button
-    document.getElementById('printResults')?.addEventListener('click', function() {
-        window.print();
-    });
-
-    // Handle CSV export
-    document.getElementById('exportCSV')?.addEventListener('click', function() {
-        const url = new URL(window.location.href);
-        url.searchParams.set('export', 'csv');
-        window.location.href = url.toString();
-    });
-
-    // Handle PDF export
-    document.getElementById('exportPDF')?.addEventListener('click', function() {
-        const url = new URL(window.location.href);
-        url.searchParams.set('export', 'pdf');
-        window.location.href = url.toString();
-    });
-
-    // Handle form reset
-    document.querySelector('#filterForm button[type="reset"]')?.addEventListener('click', function() {
-        // Clear input fields
-        document.getElementById('day_of_week').selectedIndex = 0;
+    // Handle form reset button
+    document.getElementById('resetFilter').addEventListener('click', function() {
+        // Clear all form inputs
+        document.getElementById('day_of_week').value = '';
         document.getElementById('start_date').value = '';
         document.getElementById('end_date').value = '';
-
-        // Optional: Trigger form submission to reset results
+        
+        // Submit the form
         document.getElementById('filterForm').submit();
     });
 });
 </script>
 
-<?php 
-// Handle export functionality
-if (isset($_GET['export'])) {
-    $exportType = cleanInput($_GET['export']);
+<?php
+// Add the getRecordCount method to LotteryData.php model
+// This method should be added to models/LotteryData.php
+
+/*
+public function getRecordCount($filters = [])
+{
+    $sql = "SELECT COUNT(*) as count FROM lotto_records WHERE 1=1";
     
-    // Remove export parameter from filters
-    unset($_GET['export']);
-    
-    // Get all records for export (remove pagination)
-    $exportFilters = $filters;
-    unset($exportFilters['limit'], $exportFilters['offset']);
-    $exportData = $lotteryData->getRecords($exportFilters);
-    
-    if ($exportData['status'] === 'success') {
-        $records = $exportData['records'];
-        
-        if ($exportType === 'csv') {
-            // CSV Export
-            header('Content-Type: text/csv; charset=utf-8');
-            header('Content-Disposition: attachment; filename="lottery_results_' . date('YmdHis') . '.csv"');
-            
-            // Open output stream
-            $output = fopen('php://output', 'w');
-            
-            // CSV Headers
-            fputcsv($output, [
-                'วันที่', 
-                'วันในสัปดาห์', 
-                'รางวัลที่ 1', 
-                'เลขท้าย 3 ตัว', 
-                'เลขหน้า 3 ตัว', 
-                'เลขท้าย 2 ตัว', 
-                'ใกล้เคียงรางวัลที่ 1'
-            ]);
-            
-            // Output rows
-            foreach ($records as $record) {
-                fputcsv($output, [
-                    formatThaiDisplayDate($record['dateValue']),
-                    $record['day_of_week'],
-                    $record['first_prize'],
-                    $record['first_prize_last3'],
-                    $record['last3f'],
-                    $record['last2'],
-                    $record['near1_1'] . ', ' . $record['near1_2']
-                ]);
-            }
-            
-            fclose($output);
-            exit;
-        } elseif ($exportType === 'pdf') {
-            // PDF Export using TCPDF or similar library
-            require_once __DIR__ . '/../vendor/autoload.php';
-            
-            // Create new PDF document
-            $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            
-            // Set document information
-            $pdf->SetCreator(PDF_CREATOR);
-            $pdf->SetTitle('ผลรางวัลสลากกินแบ่งรัฐบาล');
-            $pdf->SetSubject('ผลรางวัลสลากกินแบ่งรัฐบาล');
-            
-            // Set default header data
-            $pdf->SetHeaderData('', 0, 'ผลรางวัลสลากกินแบ่งรัฐบาล', date('Y-m-d H:i:s'));
-            
-            // Set header and footer fonts
-            $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
-            $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
-            
-            // Set default monospaced font
-            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-            
-            // Set margins
-            $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-            $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-            $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-            
-            // Set auto page breaks
-            $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-            
-            // Add a page
-            $pdf->AddPage('L'); // Landscape orientation
-            
-            // Set font
-            $pdf->SetFont('thsarabun', '', 12);
-            
-            // Create table HTML
-            $html = '<table border="1" cellpadding="4">
-                <thead>
-                    <tr style="background-color:#f1f1f1;">
-                        <th>วันที่</th>
-                        <th>วันในสัปดาห์</th>
-                        <th>รางวัลที่ 1</th>
-                        <th>เลขท้าย 3 ตัว</th>
-                        <th>เลขหน้า 3 ตัว</th>
-                        <th>เลขท้าย 2 ตัว</th>
-                        <th>ใกล้เคียงรางวัลที่ 1</th>
-                    </tr>
-                </thead>
-                <tbody>';
-            
-            foreach ($records as $record) {
-                $html .= '<tr>
-                    <td>' . formatThaiDisplayDate($record['dateValue']) . '</td>
-                    <td>' . $record['day_of_week'] . '</td>
-                    <td>' . $record['first_prize'] . '</td>
-                    <td>' . $record['first_prize_last3'] . '</td>
-                    <td>' . $record['last3f'] . '</td>
-                    <td>' . $record['last2'] . '</td>
-                    <td>' . $record['near1_1'] . ', ' . $record['near1_2'] . '</td>
-                </tr>';
-            }
-            
-            $html .= '</tbody></table>';
-            
-            // Print text using writeHTMLCell()
-            $pdf->writeHTML($html, true, false, true, false, '');
-            
-            // Close and output PDF document
-            $pdf->Output('lottery_results_' . date('YmdHis') . '.pdf', 'D');
-            exit;
-        }
+    // Apply filters
+    if (!empty($filters['day_of_week'])) {
+        $sql .= " AND day_of_week = '" . $this->conn->real_escape_string($filters['day_of_week']) . "'";
     }
+
+    if (!empty($filters['start_date'])) {
+        $sql .= " AND dateValue >= '" . $this->conn->real_escape_string($filters['start_date']) . "'";
+    }
+
+    if (!empty($filters['end_date'])) {
+        $sql .= " AND dateValue <= '" . $this->conn->real_escape_string($filters['end_date']) . "'";
+    }
+    
+    $result = $this->conn->query($sql);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        return intval($row['count']);
+    }
+    
+    return 0;
 }
+*/
 
 // Include footer
 include __DIR__ . '/../templates/footer.php';

@@ -11,9 +11,9 @@ $pageTitle = 'สถิติ';
 $activePage = 'statistics';
 
 // Include functions and models
-require_once __DIR__ . '/includes/functions.php';
-require_once __DIR__ . '/models/LotteryData.php';
-require_once __DIR__ . '/models/StatisticalAnalysis.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../models/LotteryData.php';
+require_once __DIR__ . '/../models/StatisticalAnalysis.php';
 
 // Initialize models
 $connection = connectDatabase();
@@ -85,7 +85,7 @@ $pageActions = '
 </div>';
 
 // Include header
-include __DIR__ . '/templates/header.php';
+include __DIR__ . '/../templates/header.php';
 ?>
 
 <!-- Filter Card -->
@@ -190,7 +190,7 @@ include __DIR__ . '/templates/header.php';
                         $chartId = 'frequencyChart';
                         $title = 'การกระจายความถี่ - ' . $fieldLabels[$filters['field']];
                         $description = 'แสดงความถี่ของตัวเลขที่ออกในช่วงเวลาที่กำหนด';
-                        include __DIR__ . '/templates/components/chart_container.php';
+                        include __DIR__ . '/../templates/components/chart_container.php';
                         
                         // Add JavaScript to create chart
                         $inlineJs = "
@@ -263,7 +263,7 @@ include __DIR__ . '/templates/header.php';
                             $chartId = 'positionHeatmap';
                             $title = 'ความถี่ของตัวเลขในแต่ละตำแหน่ง - ' . $fieldLabels[$filters['field']];
                             $description = 'แสดงความถี่ของตัวเลข 0-9 ในแต่ละตำแหน่งของ' . $fieldLabels[$filters['field']];
-                            include __DIR__ . '/templates/components/chart_container.php';
+                            include __DIR__ . '/../templates/components/chart_container.php';
                             
                             // Add JavaScript to create heatmap
                             $inlineJs = "
@@ -294,7 +294,7 @@ include __DIR__ . '/templates/header.php';
                         $chartId = 'patternChart';
                         $title = 'รูปแบบที่พบบ่อย - ' . $fieldLabels[$filters['field']];
                         $description = 'แสดงรูปแบบการออกที่พบบ่อยในช่วง 100 งวดย้อนหลัง';
-                        include __DIR__ . '/templates/components/chart_container.php';
+                        include __DIR__ . '/../templates/components/chart_container.php';
                         
                         // Add JavaScript to create pattern chart
                         $inlineJs = "
@@ -371,7 +371,7 @@ include __DIR__ . '/templates/header.php';
                         $chartId = 'trendChart';
                         $title = 'แนวโน้มการออก - ' . $fieldLabels[$filters['field']];
                         $description = 'แสดงแนวโน้มเพิ่มขึ้น/ลดลงของตัวเลขที่ออกในช่วง 50 งวดที่ผ่านมา';
-                        include __DIR__ . '/templates/components/chart_container.php';
+                        include __DIR__ . '/../templates/components/chart_container.php';
                         
                         // Add JavaScript to create trend chart
                         $inlineJs = "
@@ -608,4 +608,4 @@ include __DIR__ . '/templates/header.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/templates/footer.php'; ?>
+<?php include __DIR__ . '/../templates/footer.php'; ?>

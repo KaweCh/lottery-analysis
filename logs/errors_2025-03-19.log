@@ -114,3 +114,39 @@
 [2025-03-19 15:53:08] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
 [2025-03-19 15:53:17] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
 [2025-03-19 15:53:17] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:26:48] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:26:48] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:26:54] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:26:54] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:36:54] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:36:54] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:42:27] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:42:27] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:42:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:42:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:42:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:42:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:50:12] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/header.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\statistics.php on line 88
+[2025-03-19 16:50:12] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/header.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\statistics.php on line 88
+[2025-03-19 16:50:12] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/chart_container.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\statistics.php on line 193
+[2025-03-19 16:50:12] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/chart_container.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\statistics.php on line 193
+[2025-03-19 16:50:12] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/chart_container.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\statistics.php on line 266
+[2025-03-19 16:50:12] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/chart_container.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\statistics.php on line 266
+[2025-03-19 16:50:12] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/chart_container.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\statistics.php on line 374
+[2025-03-19 16:50:12] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/chart_container.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\statistics.php on line 374
+[2025-03-19 16:50:12] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/footer.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\statistics.php on line 611
+[2025-03-19 16:50:12] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/footer.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\statistics.php on line 611
+[2025-03-19 16:50:40] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:50:40] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:50:40] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:50:40] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:50:40] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:50:40] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:50:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:50:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:50:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:50:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:50:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:50:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 16:51:14] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 16:51:14] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52

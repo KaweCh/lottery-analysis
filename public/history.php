@@ -10,10 +10,10 @@ $pageTitle = 'ประวัติการทำนาย';
 $activePage = 'history';
 
 // Include functions and models
-require_once __DIR__ . '/includes/functions.php';
-require_once __DIR__ . '/models/LotteryData.php';
-require_once __DIR__ . '/models/PredictionModel.php';
-require_once __DIR__ . '/models/AccuracyTracker.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../models/LotteryData.php';
+require_once __DIR__ . '/../models/PredictionModel.php';
+require_once __DIR__ . '/../models/AccuracyTracker.php';
 
 // Initialize models
 $connection = connectDatabase();

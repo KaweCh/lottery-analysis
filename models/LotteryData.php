@@ -77,6 +77,38 @@ class LotteryData
     }
 
     /**
+     * Get count of lottery records with applied filters
+     * 
+     * @param array $filters Filter parameters
+     * @return int Number of matching records
+     */
+    public function getRecordCount($filters = [])
+    {
+        $sql = "SELECT COUNT(*) as count FROM lotto_records WHERE 1=1";
+
+        // Apply filters
+        if (!empty($filters['day_of_week'])) {
+            $sql .= " AND day_of_week = '" . $this->conn->real_escape_string($filters['day_of_week']) . "'";
+        }
+
+        if (!empty($filters['start_date'])) {
+            $sql .= " AND dateValue >= '" . $this->conn->real_escape_string($filters['start_date']) . "'";
+        }
+
+        if (!empty($filters['end_date'])) {
+            $sql .= " AND dateValue <= '" . $this->conn->real_escape_string($filters['end_date']) . "'";
+        }
+
+        $result = $this->conn->query($sql);
+        if ($result) {
+            $row = $result->fetch_assoc();
+            return intval($row['count']);
+        }
+
+        return 0;
+    }
+
+    /**
      * Get latest lottery results
      * 
      * @param int $limit Number of results to retrieve
@@ -541,6 +573,4 @@ class LotteryData
             'digit_types' => $digitTypes
         ];
     }
-
-    
 }
