@@ -150,3 +150,134 @@
 [2025-03-19 16:50:52] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
 [2025-03-19 16:51:14] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
 [2025-03-19 16:51:14] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:00:23] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/header.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 102
+[2025-03-19 17:00:23] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/header.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 102
+[2025-03-19 17:00:23] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 182
+[2025-03-19 17:00:23] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 182
+[2025-03-19 17:00:23] ERROR: number_format(): Passing null to parameter #1 ($num) of type float is deprecated in C:\xampp\htdocs\lottery-analysis\public\history.php on line 186
+[2025-03-19 17:00:23] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 191
+[2025-03-19 17:00:23] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 191
+[2025-03-19 17:00:23] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 202
+[2025-03-19 17:00:23] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 202
+[2025-03-19 17:00:23] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 212
+[2025-03-19 17:00:23] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 212
+[2025-03-19 17:00:23] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/footer.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 533
+[2025-03-19 17:00:23] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/footer.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 533
+[2025-03-19 17:00:24] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/header.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 102
+[2025-03-19 17:00:24] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/header.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 102
+[2025-03-19 17:00:24] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 182
+[2025-03-19 17:00:24] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 182
+[2025-03-19 17:00:24] ERROR: number_format(): Passing null to parameter #1 ($num) of type float is deprecated in C:\xampp\htdocs\lottery-analysis\public\history.php on line 186
+[2025-03-19 17:00:24] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 191
+[2025-03-19 17:00:24] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 191
+[2025-03-19 17:00:24] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 202
+[2025-03-19 17:00:24] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 202
+[2025-03-19 17:00:24] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 212
+[2025-03-19 17:00:24] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/components/stat_card.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 212
+[2025-03-19 17:00:24] ERROR: include(C:\xampp\htdocs\lottery-analysis\public/templates/footer.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\lottery-analysis\public\history.php on line 533
+[2025-03-19 17:00:24] ERROR: include(): Failed opening 'C:\xampp\htdocs\lottery-analysis\public/templates/footer.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\lottery-analysis\public\history.php on line 533
+[2025-03-19 17:00:43] ERROR: number_format(): Passing null to parameter #1 ($num) of type float is deprecated in C:\xampp\htdocs\lottery-analysis\public\history.php on line 186
+[2025-03-19 17:01:14] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:01:14] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:01:30] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:01:30] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:01:47] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:01:47] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined array key "digit" in C:\xampp\htdocs\lottery-analysis\templates\components\prediction_card.php on line 73
+[2025-03-19 17:03:20] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:03:20] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:06:24] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:06:24] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:06:42] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:06:42] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:06:45] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:06:45] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:07:35] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:07:35] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:07:54] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:07:54] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:08:24] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:08:24] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:09:45] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:09:45] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:09:54] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:09:54] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:09:55] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:09:55] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:09:57] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:09:57] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:10:25] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:10:25] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:10:43] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:10:43] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:13:05] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:13:05] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:20:39] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:20:39] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:20:57] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:20:57] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:21:32] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:21:32] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:22:01] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:22:01] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:22:29] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:22:29] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:22:48] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:22:48] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:23:05] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:23:05] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:23:30] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:23:30] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:24:00] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:24:00] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:27:17] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:27:17] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:27:40] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:27:40] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:27:43] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:27:43] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:28:09] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:28:09] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:28:12] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:28:12] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52
+[2025-03-19 17:28:25] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 41
+[2025-03-19 17:28:25] ERROR: Undefined variable $id in C:\xampp\htdocs\lottery-analysis\templates\components\chart_container.php on line 52

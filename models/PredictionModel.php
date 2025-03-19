@@ -343,11 +343,20 @@ class PredictionModel
      * @param string $targetDate Target date for prediction
      * @return bool Success status
      */
-    private function storePredictions($predictions, $digitType, $targetDate)
+    /**
+     * Store predictions in the database
+     * 
+     * @param array $predictions Predictions to store
+     * @param string $digitType Type of digits predicted
+     * @param string $targetDate Target date for prediction
+     * @param string $predictionType Type of prediction method (statistical, machine_learning, ensemble)
+     * @return bool Success status
+     */
+    private function storePredictions($predictions, $digitType, $targetDate, $predictionType = 'statistical')
     {
         // First, delete any existing predictions for this target date and digit type
         $sql = "DELETE FROM lottery_predictions 
-                WHERE target_draw_date = ? AND digit_type = ?";
+            WHERE target_draw_date = ? AND digit_type = ?";
 
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("ss", $targetDate, $digitType);
@@ -355,16 +364,16 @@ class PredictionModel
 
         // Insert new predictions
         $sql = "INSERT INTO lottery_predictions 
-                (prediction_date, target_draw_date, prediction_type, digit_type, 
-                 predicted_digits, confidence) 
-                VALUES (NOW(), ?, 'statistical', ?, ?, ?)";
+            (prediction_date, target_draw_date, prediction_type, digit_type, 
+             predicted_digits, confidence) 
+            VALUES (NOW(), ?, ?, ?, ?, ?)";
 
         $stmt = $this->conn->prepare($sql);
 
         foreach ($predictions as $prediction) {
             $digit = $prediction['digit'];
             $confidence = $prediction['confidence'];
-            $stmt->bind_param("sssd", $targetDate, $digitType, $digit, $confidence);
+            $stmt->bind_param("ssssd", $targetDate, $predictionType, $digitType, $digit, $confidence);
             $stmt->execute();
         }
 
@@ -931,7 +940,7 @@ class PredictionModel
         }
 
         // บันทึกการทำนายลงฐานข้อมูล
-        $this->storePredictions($formattedPredictions, $digitType, $targetDate);
+        $this->storePredictions($formattedPredictions, $digitType, $targetDate, 'machine_learning');
 
         // สร้างข้อมูลสรุปการวิเคราะห์
         $analysisSummary = $statisticalPredictions['analysis_summary'];
@@ -1049,8 +1058,8 @@ class PredictionModel
             ];
         }
 
-        // บันทึกการทำนายลงฐานข้อมูล
-        $this->storePredictions($formattedPredictions, $digitType, $targetDate);
+        // บันทึกการทำนายลงฐานข้อมูล - แก้ไขให้บันทึกประเภทเป็น 'ensemble'
+        $this->storePredictions($formattedPredictions, $digitType, $targetDate, 'ensemble');
 
         // น้ำหนักของแต่ละวิธีในการวิเคราะห์
         $methodWeightsDetailed = [

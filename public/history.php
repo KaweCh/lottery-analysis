@@ -99,7 +99,7 @@ $pageActions = '
 </div>';
 
 // Include header
-include __DIR__ . '/templates/header.php';
+include __DIR__ . '/../templates/header.php';
 ?>
 
 <!-- Filter Card -->
@@ -179,16 +179,16 @@ include __DIR__ . '/templates/header.php';
     $colorClass = "primary";
     $footerText = "จำนวนการทำนายทั้งหมด";
     $footerIcon = "fas fa-history";
-    include __DIR__ . '/templates/components/stat_card.php';
+    include __DIR__ . '/../templates/components/stat_card.php';
     
     // Correct Predictions Card
     $title = "ทำนายถูกต้อง";
-    $value = number_format($accuracyStats['total_correct']);
+    $value = is_null($accuracyStats['overall_accuracy']) ? 0 : $accuracyStats['overall_accuracy'];
     $icon = "fas fa-check-circle";
     $colorClass = "success";
     $footerText = number_format($accuracyStats['overall_accuracy'], 2) . "% ความแม่นยำเฉลี่ย";
     $footerIcon = "fas fa-bullseye";
-    include __DIR__ . '/templates/components/stat_card.php';
+    include __DIR__ . '/../templates/components/stat_card.php';
     
     // Accuracy Trend Card
     $title = "แนวโน้มความแม่นยำ";
@@ -199,7 +199,7 @@ include __DIR__ . '/templates/header.php';
     $colorClass = $accuracyStats['trend'] > 0 ? "success" : ($accuracyStats['trend'] < 0 ? "danger" : "info");
     $footerText = "เทียบกับ 30 วันที่ผ่านมา";
     $footerIcon = $trendIcon;
-    include __DIR__ . '/templates/components/stat_card.php';
+    include __DIR__ . '/../templates/components/stat_card.php';
     
     // Best Method Card
     $title = "วิธีที่แม่นยำที่สุด";
@@ -209,7 +209,7 @@ include __DIR__ . '/templates/header.php';
     $colorClass = "warning";
     $footerText = $accuracyStats['best_method_accuracy'] ? number_format($accuracyStats['best_method_accuracy'], 2) . "% ความแม่นยำ" : "";
     $footerIcon = "fas fa-medal";
-    include __DIR__ . '/templates/components/stat_card.php';
+    include __DIR__ . '/../templates/components/stat_card.php';
     ?>
 </div>
 
@@ -224,7 +224,7 @@ include __DIR__ . '/templates/header.php';
             $chartId = 'accuracyHistoryChart';
             $title = 'ประวัติความแม่นยำในการทำนาย';
             $description = 'แสดงความแม่นยำของการทำนายในแต่ละเดือนที่ผ่านมา';
-            include __DIR__ . '/templates/components/chart_container.php';
+            include __DIR__ . '/../templates/components/chart_container.php';
             
             // Add JavaScript to create chart
             $inlineJs = "
@@ -530,4 +530,4 @@ document.getElementById('exportPDF')?.addEventListener('click', function() {
 });
 </script>
 
-<?php include __DIR__ . '/templates/footer.php'; ?>
+<?php include __DIR__ . '/../templates/footer.php'; ?>

@@ -334,8 +334,8 @@ include __DIR__ . '/../templates/header.php';
                                                 <td class="text-center"><?php echo $patternData['occurrences']; ?></td>
                                                 <td class="text-center">
                                                     <?php 
-                                                    $lastDate = isset($patternData['dates'][$patternData['dates'].length - 1]) ? 
-                                                                $patternData['dates'][$patternData['dates'].length - 1] : '';
+                                                    $lastDate = isset($patternData['dates']) && count($patternData['dates']) > 0 ? 
+                                                    $patternData['dates'][count($patternData['dates']) - 1] : '';
                                                     echo $lastDate ? formatThaiDisplayDate($lastDate) : '-';
                                                     ?>
                                                 </td>

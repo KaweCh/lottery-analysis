@@ -1,16 +1,18 @@
 <?php
+
 /**
  * AccuracyTracker.php
  * 
  * Model for tracking and evaluating prediction accuracy
  */
+
 namespace Models;
 
 class AccuracyTracker
 {
     private $conn;
     private $lotteryData;
-    
+
     /**
      * Constructor
      */
@@ -19,7 +21,7 @@ class AccuracyTracker
         $this->conn = $connection;
         $this->lotteryData = new LotteryData($connection);
     }
-    
+
     /**
      * Evaluate prediction accuracy against actual results
      * 
@@ -30,35 +32,35 @@ class AccuracyTracker
     {
         // Get actual results for this draw
         $result = $this->lotteryData->getResultByDate($drawDate);
-        
+
         if ($result['status'] !== 'success') {
             return [
                 'status' => 'error',
                 'message' => 'ไม่พบผลรางวัลสำหรับวันที่ระบุ'
             ];
         }
-        
+
         $actualResults = $result['record'];
-        
+
         // Get predictions for this draw
         $sql = "SELECT * FROM lottery_predictions WHERE target_draw_date = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $drawDate);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 0) {
             return [
                 'status' => 'error',
                 'message' => 'ไม่พบการทำนายสำหรับวันที่ระบุ'
             ];
         }
-        
+
         $predictions = [];
         while ($row = $result->fetch_assoc()) {
             $predictions[] = $row;
         }
-        
+
         // Evaluate each prediction
         $accuracy = [
             'first_prize_last3' => ['correct' => 0, 'total' => 0],
@@ -66,18 +68,18 @@ class AccuracyTracker
             'last3b' => ['correct' => 0, 'total' => 0],
             'last2' => ['correct' => 0, 'total' => 0]
         ];
-        
+
         $correctPredictions = [];
         $incorrectPredictions = [];
-        
+
         foreach ($predictions as $prediction) {
             $digitType = $prediction['digit_type'];
             $predictedDigit = $prediction['predicted_digits'];
             $actualDigit = $actualResults[$digitType];
-            
+
             // Mark prediction as correct or incorrect
             $isCorrect = ($predictedDigit === $actualDigit);
-            
+
             // Update prediction record
             $sql = "UPDATE lottery_predictions 
                     SET was_correct = ? 
@@ -86,7 +88,7 @@ class AccuracyTracker
             $correct = $isCorrect ? 1 : 0;
             $stmt->bind_param("ii", $correct, $prediction['prediction_id']);
             $stmt->execute();
-            
+
             // Update accuracy counters
             if (isset($accuracy[$digitType])) {
                 $accuracy[$digitType]['total']++;
@@ -98,28 +100,28 @@ class AccuracyTracker
                 }
             }
         }
-        
+
         // Calculate overall accuracy
         $totalCorrect = 0;
         $totalPredictions = 0;
-        
+
         foreach ($accuracy as $type => $counts) {
             $totalCorrect += $counts['correct'];
             $totalPredictions += $counts['total'];
         }
-        
+
         $overallAccuracy = ($totalPredictions > 0) ? ($totalCorrect / $totalPredictions) * 100 : 0;
-        
+
         // Store accuracy record
         $sql = "INSERT INTO prediction_accuracy 
                 (prediction_type, period_start, period_end, 
                  total_predictions, correct_predictions, accuracy_percentage) 
                 VALUES ('statistical', ?, ?, ?, ?, ?)";
-        
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("ssiid", $drawDate, $drawDate, $totalPredictions, $totalCorrect, $overallAccuracy);
         $stmt->execute();
-        
+
         return [
             'status' => 'success',
             'draw_date' => $drawDate,
@@ -130,7 +132,7 @@ class AccuracyTracker
             'actual_results' => $actualResults
         ];
     }
-    
+
     /**
      * Compare prediction methods' performance
      * 
@@ -143,40 +145,40 @@ class AccuracyTracker
         $startDate = new \DateTime();
         $startDate->modify("-$period days");
         $startDateStr = $startDate->format('Y-m-d');
-        
+
         $sql = "SELECT * FROM prediction_accuracy 
                 WHERE period_end >= ? 
                 ORDER BY period_end ASC";
-                
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $startDateStr);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 0) {
             return [
                 'status' => 'error',
                 'message' => 'ไม่พบข้อมูลการประเมินความแม่นยำในช่วงเวลาที่ระบุ'
             ];
         }
-        
+
         $accuracyData = [];
         while ($row = $result->fetch_assoc()) {
             $accuracyData[] = $row;
         }
-        
+
         // Get statistical history for the period
         $sql = "SELECT sh.* FROM statistical_history sh
                 INNER JOIN lottery_predictions lp ON sh.calculation_date LIKE CONCAT(LEFT(lp.prediction_date, 10), '%')
                 WHERE lp.target_draw_date >= ?
                 AND sh.calculation_type = 'prediction'
                 ORDER BY sh.calculation_date ASC";
-                
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $startDateStr);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $methodPerformance = [
             'day_of_week' => ['used' => 0, 'correct' => 0],
             'date' => ['used' => 0, 'correct' => 0],
@@ -187,21 +189,21 @@ class AccuracyTracker
             'position' => ['used' => 0, 'correct' => 0],
             'trend' => ['used' => 0, 'correct' => 0]
         ];
-        
+
         $usedMethods = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $predictionDate = substr($row['calculation_date'], 0, 10);
             $resultData = json_decode($row['result_summary'], true);
-            
+
             // Track which methods were used
             foreach ($resultData as $method => $used) {
                 if ($used && strpos($method, '_used') !== false) {
                     $methodName = str_replace('_used', '', $method);
-                    
+
                     if (isset($methodPerformance[$methodName])) {
                         $methodPerformance[$methodName]['used']++;
-                        
+
                         // Store used methods for this prediction
                         if (!isset($usedMethods[$predictionDate])) {
                             $usedMethods[$predictionDate] = [];
@@ -211,20 +213,20 @@ class AccuracyTracker
                 }
             }
         }
-        
+
         // Get correct predictions
         $sql = "SELECT * FROM lottery_predictions 
                 WHERE target_draw_date >= ? 
                 AND was_correct = 1";
-                
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $startDateStr);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         while ($row = $result->fetch_assoc()) {
             $predictionDate = substr($row['prediction_date'], 0, 10);
-            
+
             // Credit all methods that contributed to this correct prediction
             if (isset($usedMethods[$predictionDate])) {
                 foreach ($usedMethods[$predictionDate] as $method) {
@@ -232,17 +234,17 @@ class AccuracyTracker
                 }
             }
         }
-        
+
         // Calculate success rates
         foreach ($methodPerformance as $method => &$data) {
             $data['success_rate'] = ($data['used'] > 0) ? ($data['correct'] / $data['used']) * 100 : 0;
         }
-        
+
         // Sort by success rate
-        uasort($methodPerformance, function($a, $b) {
+        uasort($methodPerformance, function ($a, $b) {
             return $b['success_rate'] - $a['success_rate'];
         });
-        
+
         return [
             'status' => 'success',
             'period_days' => $period,
@@ -250,7 +252,7 @@ class AccuracyTracker
             'accuracy_data' => $accuracyData
         ];
     }
-    
+
     /**
      * Get top performing digits 
      * 
@@ -268,56 +270,56 @@ class AccuracyTracker
                 'message' => 'ประเภทเลขที่ระบุไม่ถูกต้อง'
             ];
         }
-        
+
         // Get evaluation period
         $startDate = new \DateTime();
         $startDate->modify("-$period days");
         $startDateStr = $startDate->format('Y-m-d');
-        
+
         // Get all predictions in the period
         $sql = "SELECT predicted_digits, was_correct 
                 FROM lottery_predictions 
                 WHERE target_draw_date >= ? 
                 AND digit_type = ?";
-                
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("ss", $startDateStr, $digitType);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $digitPerformance = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $digit = $row['predicted_digits'];
             $correct = $row['was_correct'];
-            
+
             if (!isset($digitPerformance[$digit])) {
                 $digitPerformance[$digit] = [
                     'predicted' => 0,
                     'correct' => 0
                 ];
             }
-            
+
             $digitPerformance[$digit]['predicted']++;
             if ($correct) {
                 $digitPerformance[$digit]['correct']++;
             }
         }
-        
+
         // Calculate success rates
         foreach ($digitPerformance as $digit => &$data) {
-            $data['success_rate'] = ($data['predicted'] > 0) ? 
+            $data['success_rate'] = ($data['predicted'] > 0) ?
                 ($data['correct'] / $data['predicted']) * 100 : 0;
         }
-        
+
         // Sort by success rate and then by number of correct predictions
-        uasort($digitPerformance, function($a, $b) {
+        uasort($digitPerformance, function ($a, $b) {
             if ($a['correct'] === $b['correct']) {
                 return $b['success_rate'] - $a['success_rate'];
             }
             return $b['correct'] - $a['correct'];
         });
-        
+
         // Convert to array format for easier use
         $formattedPerformance = [];
         foreach ($digitPerformance as $digit => $data) {
@@ -328,7 +330,7 @@ class AccuracyTracker
                 'success_rate' => round($data['success_rate'], 2)
             ];
         }
-        
+
         return [
             'status' => 'success',
             'digit_type' => $digitType,
@@ -336,7 +338,7 @@ class AccuracyTracker
             'digit_performance' => $formattedPerformance
         ];
     }
-    
+
     /**
      * Generate accuracy report for a specific period
      * 
@@ -348,55 +350,55 @@ class AccuracyTracker
         // Determine date range
         $endDate = new \DateTime();
         $startDate = clone $endDate;
-        
+
         switch ($period) {
             case 'weekly':
                 $startDate->modify('-7 days');
                 $periodName = 'รายสัปดาห์';
                 break;
-                
+
             case 'monthly':
                 $startDate->modify('-30 days');
                 $periodName = 'รายเดือน';
                 break;
-                
+
             case 'yearly':
                 $startDate->modify('-365 days');
                 $periodName = 'รายปี';
                 break;
-                
+
             case 'all':
             default:
                 $startDate->modify('-10 years'); // Long enough to get all records
                 $periodName = 'ทั้งหมด';
                 break;
         }
-        
+
         $startDateStr = $startDate->format('Y-m-d');
         $endDateStr = $endDate->format('Y-m-d');
-        
+
         // Get accuracy data for the period
         $sql = "SELECT * FROM prediction_accuracy 
                 WHERE period_end BETWEEN ? AND ? 
                 ORDER BY period_end ASC";
-                
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("ss", $startDateStr, $endDateStr);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $accuracyData = [];
         $totalPredictions = 0;
         $totalCorrect = 0;
-        
+
         while ($row = $result->fetch_assoc()) {
             $accuracyData[] = $row;
             $totalPredictions += $row['total_predictions'];
             $totalCorrect += $row['correct_predictions'];
         }
-        
+
         $overallAccuracy = ($totalPredictions > 0) ? ($totalCorrect / $totalPredictions) * 100 : 0;
-        
+
         // Get digit type performance
         $digitTypePerformance = [
             'first_prize_last3' => ['total' => 0, 'correct' => 0],
@@ -404,18 +406,18 @@ class AccuracyTracker
             'last3b' => ['total' => 0, 'correct' => 0],
             'last2' => ['total' => 0, 'correct' => 0]
         ];
-        
+
         $sql = "SELECT digit_type, COUNT(*) as total, 
                 SUM(was_correct) as correct 
                 FROM lottery_predictions 
                 WHERE target_draw_date BETWEEN ? AND ?
                 GROUP BY digit_type";
-                
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("ss", $startDateStr, $endDateStr);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         while ($row = $result->fetch_assoc()) {
             $digitType = $row['digit_type'];
             if (isset($digitTypePerformance[$digitType])) {
@@ -423,17 +425,16 @@ class AccuracyTracker
                 $digitTypePerformance[$digitType]['correct'] = $row['correct'];
             }
         }
-        
+
         // Calculate success rates
         foreach ($digitTypePerformance as $type => &$data) {
-            $data['success_rate'] = ($data['total'] > 0) ? 
+            $data['success_rate'] = ($data['total'] > 0) ?
                 ($data['correct'] / $data['total']) * 100 : 0;
         }
-        
+
         // Get method performance comparison
-        $methodsComparison = $this->compareMethodsPerformance(($period === 'all') ? 3650 : 
-            ($period === 'yearly' ? 365 : ($period === 'monthly' ? 30 : 7)));
-        
+        $methodsComparison = $this->compareMethodsPerformance(($period === 'all') ? 3650 : ($period === 'yearly' ? 365 : ($period === 'monthly' ? 30 : 7)));
+
         // Format the report
         return [
             'status' => 'success',
@@ -459,37 +460,37 @@ class AccuracyTracker
     public function getAccuracyHistory($period = 'all')
     {
         $sql = "SELECT * FROM prediction_accuracy";
-        
+
         if ($period !== 'all') {
             $startDate = null;
             $today = new \DateTime();
-            
+
             switch ($period) {
                 case 'weekly':
                     $startDate = clone $today;
                     $startDate->modify('-7 days');
                     break;
-                
+
                 case 'monthly':
                     $startDate = clone $today;
                     $startDate->modify('-30 days');
                     break;
-                
+
                 case 'yearly':
                     $startDate = clone $today;
                     $startDate->modify('-365 days');
                     break;
             }
-            
+
             if ($startDate !== null) {
                 $sql .= " WHERE period_end >= '" . $startDate->format('Y-m-d') . "'";
             }
         }
-        
+
         $sql .= " ORDER BY period_end ASC";
-        
+
         $result = $this->conn->query($sql);
-        
+
         if (!$result) {
             return [
                 'status' => 'error',
@@ -497,19 +498,19 @@ class AccuracyTracker
                 'sql' => $sql
             ];
         }
-        
+
         $history = [];
         $totalPredictions = 0;
         $totalCorrect = 0;
-        
+
         while ($row = $result->fetch_assoc()) {
             $history[] = $row;
             $totalPredictions += $row['total_predictions'];
             $totalCorrect += $row['correct_predictions'];
         }
-        
+
         $overallAccuracy = ($totalPredictions > 0) ? ($totalCorrect / $totalPredictions) * 100 : 0;
-        
+
         return [
             'status' => 'success',
             'history' => $history,
@@ -519,4 +520,142 @@ class AccuracyTracker
             'count' => count($history)
         ];
     }
+
+    /**
+     * Get overall accuracy statistics
+     * 
+     * @return array Accuracy statistics
+     */
+    public function getAccuracyStatistics()
+    {
+        // Get total predictions and correct predictions
+        $sql = "SELECT COUNT(*) as total, SUM(CASE WHEN was_correct = 1 THEN 1 ELSE 0 END) as correct 
+            FROM lottery_predictions 
+            WHERE was_correct IS NOT NULL";
+
+        $result = $this->conn->query($sql);
+
+        if (!$result) {
+            return [
+                'status' => 'error',
+                'message' => 'ข้อผิดพลาดในการสืบค้นฐานข้อมูล: ' . $this->conn->error,
+                'sql' => $sql
+            ];
+        }
+
+        $row = $result->fetch_assoc();
+        $totalPredictions = $row['total'];
+        $totalCorrect = $row['correct'];
+        $overallAccuracy = ($totalPredictions > 0) ? ($totalCorrect / $totalPredictions) * 100 : 0;
+
+        // Calculate accuracy trend (compared to last month)
+        $currentMonth = date('Y-m-01');
+        $lastMonth = date('Y-m-01', strtotime('-1 month'));
+
+        $sqlCurrentMonth = "SELECT COUNT(*) as total, SUM(CASE WHEN was_correct = 1 THEN 1 ELSE 0 END) as correct 
+                     FROM lottery_predictions 
+                     WHERE was_correct IS NOT NULL
+                     AND prediction_date >= '$currentMonth'";
+
+        $sqlLastMonth = "SELECT COUNT(*) as total, SUM(CASE WHEN was_correct = 1 THEN 1 ELSE 0 END) as correct 
+                  FROM lottery_predictions 
+                  WHERE was_correct IS NOT NULL
+                  AND prediction_date >= '$lastMonth' AND prediction_date < '$currentMonth'";
+
+        $resultCurrentMonth = $this->conn->query($sqlCurrentMonth);
+        $resultLastMonth = $this->conn->query($sqlLastMonth);
+
+        $currentMonthAccuracy = 0;
+        $lastMonthAccuracy = 0;
+
+        if ($resultCurrentMonth && $row = $resultCurrentMonth->fetch_assoc()) {
+            $currentMonthAccuracy = ($row['total'] > 0) ? ($row['correct'] / $row['total']) * 100 : 0;
+        }
+
+        if ($resultLastMonth && $row = $resultLastMonth->fetch_assoc()) {
+            $lastMonthAccuracy = ($row['total'] > 0) ? ($row['correct'] / $row['total']) * 100 : 0;
+        }
+
+        $trend = $currentMonthAccuracy - $lastMonthAccuracy;
+
+        // Find the best prediction method
+        $sqlMethods = "SELECT prediction_type, COUNT(*) as total, 
+               SUM(CASE WHEN was_correct = 1 THEN 1 ELSE 0 END) as correct 
+               FROM lottery_predictions 
+               WHERE was_correct IS NOT NULL
+               GROUP BY prediction_type";
+
+        $resultMethods = $this->conn->query($sqlMethods);
+
+        $bestMethod = null;
+        $bestMethodAccuracy = 0;
+
+        if ($resultMethods) {
+            while ($row = $resultMethods->fetch_assoc()) {
+                $methodAccuracy = ($row['total'] > 0) ? ($row['correct'] / $row['total']) * 100 : 0;
+
+                if ($methodAccuracy > $bestMethodAccuracy) {
+                    $bestMethodAccuracy = $methodAccuracy;
+                    $bestMethod = $row['prediction_type'];
+                }
+            }
+        }
+
+        return [
+            'status' => 'success',
+            'total_predictions' => $totalPredictions,
+            'total_correct' => $totalCorrect,
+            'overall_accuracy' => $overallAccuracy,
+            'trend' => $trend,
+            'best_method' => $bestMethod,
+            'best_method_accuracy' => $bestMethodAccuracy
+        ];
+    }
+
+    /**
+     * Get digit type performance comparison
+     * 
+     * @return array Digit type performance data
+     */
+    public function getDigitTypePerformance()
+    {
+        $sql = "SELECT digit_type, COUNT(*) as total, 
+            SUM(CASE WHEN was_correct = 1 THEN 1 ELSE 0 END) as correct 
+            FROM lottery_predictions 
+            WHERE was_correct IS NOT NULL
+            GROUP BY digit_type";
+
+        $result = $this->conn->query($sql);
+
+        if (!$result) {
+            return [
+                'status' => 'error',
+                'message' => 'ข้อผิดพลาดในการสืบค้นฐานข้อมูล: ' . $this->conn->error,
+                'sql' => $sql
+            ];
+        }
+
+        $digitTypes = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $accuracy = ($row['total'] > 0) ? ($row['correct'] / $row['total']) * 100 : 0;
+
+            $digitTypes[$row['digit_type']] = [
+                'total' => $row['total'],
+                'correct' => $row['correct'],
+                'accuracy' => $accuracy
+            ];
+        }
+
+        // Sort by accuracy (highest first)
+        uasort($digitTypes, function ($a, $b) {
+            return $b['accuracy'] <=> $a['accuracy'];
+        });
+
+        return [
+            'status' => 'success',
+            'digit_types' => $digitTypes
+        ];
+    }
 }
+?>

@@ -103,6 +103,13 @@ function initializeDigitTypeToggle() {
                 
                 // Redraw charts in the visible section
                 redrawPredictionCharts(digitType);
+            } else {
+                // If we're on the prediction form page and not viewing results,
+                // submit the form automatically when digit type is changed
+                const form = document.getElementById('predictionForm');
+                if (form) {
+                    form.submit();
+                }
             }
         });
     });

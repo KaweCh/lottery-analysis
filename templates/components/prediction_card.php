@@ -1,4 +1,3 @@
-
 <?php
 /**
  * prediction_card.php
@@ -46,6 +45,16 @@ if ($wasCorrect === true) {
 } elseif ($wasCorrect === false) {
     $colorClass = 'danger';
 }
+
+// Check if we have predicted_digits or digit key
+$displayDigit = '';
+if (isset($prediction['predicted_digits'])) {
+    $displayDigit = $prediction['predicted_digits'];
+} elseif (isset($prediction['digit'])) {
+    $displayDigit = $prediction['digit'];
+} else {
+    $displayDigit = 'N/A';
+}
 ?>
 
 <div class="prediction-card card border-<?php echo $colorClass; ?> mb-3">
@@ -70,7 +79,7 @@ if ($wasCorrect === true) {
     <div class="card-body">
         <div class="row">
             <div class="col-md-6 text-center">
-                <h1 class="display-6 prediction-digit"><?php echo $prediction['digit']; ?></h1>
+                <h1 class="display-6 prediction-digit"><?php echo $displayDigit; ?></h1>
                 <p class="text-muted mb-0">เลขที่ทำนาย</p>
             </div>
             
