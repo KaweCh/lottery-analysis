@@ -392,28 +392,28 @@ class PredictionModel
      * @param string $predictionType Type of prediction method (statistical, machine_learning, ensemble)
      * @return bool Success status
      */
-    private function storePredictions($predictions, $digitType, $targetDate, $predictionType = 'statistical')
+    private function storePredictions($predictions, $digitType, $targetDate, $predictionMethod = 'statistical')
     {
-        // First, delete any existing predictions for this target date and digit type
+        // First, delete any existing predictions for this target date, digit type, and prediction method
         $sql = "DELETE FROM lottery_predictions 
-            WHERE target_draw_date = ? AND digit_type = ?";
+        WHERE target_draw_date = ? AND digit_type = ? AND prediction_type = ?";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ss", $targetDate, $digitType);
+        $stmt->bind_param("sss", $targetDate, $digitType, $predictionMethod);
         $stmt->execute();
 
         // Insert new predictions
         $sql = "INSERT INTO lottery_predictions 
-            (prediction_date, target_draw_date, prediction_type, digit_type, 
-             predicted_digits, confidence) 
-            VALUES (NOW(), ?, ?, ?, ?, ?)";
+        (prediction_date, target_draw_date, prediction_type, digit_type, 
+         predicted_digits, confidence) 
+        VALUES (NOW(), ?, ?, ?, ?, ?)";
 
         $stmt = $this->conn->prepare($sql);
 
         foreach ($predictions as $prediction) {
             $digit = $prediction['digit'];
             $confidence = $prediction['confidence'];
-            $stmt->bind_param("ssssd", $targetDate, $predictionType, $digitType, $digit, $confidence);
+            $stmt->bind_param("ssssd", $targetDate, $predictionMethod, $digitType, $digit, $confidence);
             $stmt->execute();
         }
 

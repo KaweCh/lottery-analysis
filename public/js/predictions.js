@@ -51,6 +51,7 @@ function initializePredictionForm() {
             fetch(`generate_predictions.php?${params.toString()}`)
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data);
                     if (data.status === 'success') {
                         updatePredictionsContent(data);
                     } else {
