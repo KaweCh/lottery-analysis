@@ -80,8 +80,8 @@ $totalPages = ceil($totalRecords / $limit);
 $accuracyStats = $accuracyTracker->getAccuracyStatistics();
 
 // Set additional CSS and JS
-$additionalCss = ['assets/css/charts.css'];
-$additionalJs = ['assets/js/charts.js'];
+$additionalCss = ['public/css/charts.css'];
+$additionalJs = ['public/js/charts.js'];
 
 // Set page actions
 $pageActions = '

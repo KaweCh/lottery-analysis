@@ -34,7 +34,7 @@ require_once __DIR__ . '/../config/config.php';
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
-    <link href="<?php echo getConfig('base_url'); ?>assets/css/style.css" rel="stylesheet">
+    <link href="<?php echo getConfig('base_url'); ?>public/css/style.css" rel="stylesheet">
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>

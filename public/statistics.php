@@ -21,8 +21,8 @@ $lotteryData = new Models\LotteryData($connection);
 $statAnalysis = new Models\StatisticalAnalysis($connection);
 
 // Define additional CSS and JS
-$additionalCss = ['assets/css/charts.css'];
-$additionalJs = ['assets/js/statistics.js', 'assets/js/charts.js'];
+$additionalCss = ['public/css/charts.css'];
+$additionalJs = ['public/js/statistics.js', 'assets/js/charts.js'];
 
 // Check for filter parameters
 $filters = [];

@@ -341,5 +341,5 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php
 // Include footer
 $additionalJs = ['assets/js/charts.js'];
-include __DIR__ . '/templates/footer.php';
+include __DIR__ . '/../templates/footer.php';
 ?>

@@ -5,6 +5,9 @@
  * Configuration settings for the Thai Lottery Analysis system
  */
 
+// ใส่ก่อนโค้ดหลัก
+ini_set('memory_limit', '5120M');
+
 // Application settings
 $config = [
     // Site information

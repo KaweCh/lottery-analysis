@@ -10,10 +10,10 @@ $pageTitle = 'ทำนายผลสลาก';
 $activePage = 'predictions';
 
 // Include functions and models
-require_once __DIR__ . '/includes/functions.php';
-require_once __DIR__ . '/models/LotteryData.php';
-require_once __DIR__ . '/models/PredictionModel.php';
-require_once __DIR__ . '/models/MachineLearningModel.php'; // เพิ่มการอ้างอิงไฟล์ MachineLearningModel
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../models/LotteryData.php';
+require_once __DIR__ . '/../models/PredictionModel.php';
+require_once __DIR__ . '/../models/MachineLearningModel.php'; // เพิ่มการอ้างอิงไฟล์ MachineLearningModel
 
 // Initialize models
 $connection = connectDatabase();
@@ -22,6 +22,7 @@ $predictionModel = new Models\PredictionModel($connection);
 
 // Get next draw date
 $nextDrawDate = $lotteryData->getNextDrawDate();
+echo $nextDrawDate;
 $nextDrawDateFormatted = formatThaiDisplayDate($nextDrawDate);
 
 // Check if there's a prediction request
@@ -91,11 +92,11 @@ $methodLabels = [
 ];
 
 // Set additional CSS and JS
-$additionalCss = ['assets/css/charts.css'];
-$additionalJs = ['assets/js/predictions.js', 'assets/js/charts.js'];
+$additionalCss = ['public/css/charts.css'];
+$additionalJs = ['public/js/predictions.js', 'public/js/charts.js'];
 
 // Include header
-include __DIR__ . '/templates/header.php';
+include __DIR__ . '/../templates/header.php';
 ?>
 
 <!-- Prediction Form Card -->
@@ -222,7 +223,7 @@ include __DIR__ . '/templates/header.php';
                                 $cardColor = 'danger';
                             }
                             
-                            include __DIR__ . '/templates/components/prediction_card.php';
+                            include __DIR__ . '/../templates/components/prediction_card.php';
                             ?>
                         </div>
                     <?php endforeach; ?>
@@ -235,7 +236,7 @@ include __DIR__ . '/templates/header.php';
                         $chartId = 'predictionConfidenceChart';
                         $title = 'ความเชื่อมั่นของการทำนาย - ' . $digitTypeLabels[$digitalType];
                         $description = 'แสดงระดับความเชื่อมั่นของการทำนายเรียงลำดับจากมากไปน้อย';
-                        include __DIR__ . '/templates/components/chart_container.php';
+                        include __DIR__ . '/../templates/components/chart_container.php';
                         
                         // Add JavaScript to create chart
                         $inlineJs = "
@@ -480,4 +481,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php include __DIR__ . '/templates/footer.php'; ?>
+<?php include __DIR__ . '/../templates/footer.php'; ?>

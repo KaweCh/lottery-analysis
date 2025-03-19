@@ -14,6 +14,8 @@
 // Set default was_correct value if not provided
 $wasCorrect = isset($wasCorrect) ? $wasCorrect : null;
 
+$digitType = isset($_GET['digit_type']) ? $_GET['digit_type'] : 'last3b'; // ค่าเริ่มต้น
+
 // Set digit type label
 $digitTypeLabels = [
     'first_prize_last3' => 'เลขท้าย 3 ตัว (รางวัลที่ 1)',
@@ -68,7 +70,7 @@ if ($wasCorrect === true) {
     <div class="card-body">
         <div class="row">
             <div class="col-md-6 text-center">
-                <h1 class="display-4 prediction-digit"><?php echo $prediction['digit']; ?></h1>
+                <h1 class="display-6 prediction-digit"><?php echo $prediction['digit']; ?></h1>
                 <p class="text-muted mb-0">เลขที่ทำนาย</p>
             </div>
             

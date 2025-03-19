@@ -11,7 +11,6 @@ namespace Models;
 class LotteryData
 {
     private $conn;
-    private $lotteryData;
 
     /**
      * Constructor
@@ -19,7 +18,6 @@ class LotteryData
     public function __construct($connection)
     {
         $this->conn = $connection;
-        $this->lotteryData = new LotteryData($connection);
     }
 
     /**
