@@ -41,18 +41,33 @@ function formatThaiDisplayDate($date) {
 }
 
 /**
- * Get day of week in Thai
+ * Get Thai day of week
  * 
- * @param string $date Date in YYYY-MM-DD format
+ * @param string|DateTime $date Date in YYYY-MM-DD format or DateTime object
  * @return string Day of week in Thai
  */
 function getThaiDayOfWeek($date) {
     if (empty($date)) return '';
     
+    // If DateTime object is passed, convert to string
+    if ($date instanceof DateTime) {
+        $date = $date->format('Y-m-d');
+    }
+    
     $timestamp = strtotime($date);
     $dayNum = date('N', $timestamp); // 1 (Monday) to 7 (Sunday)
     
-    return getDayOfWeekThai($dayNum);
+    $thaiDays = [
+        1 => 'จันทร์',
+        2 => 'อังคาร',
+        3 => 'พุธ',
+        4 => 'พฤหัสบดี',
+        5 => 'ศุกร์',
+        6 => 'เสาร์',
+        7 => 'อาทิตย์'
+    ];
+    
+    return $thaiDays[$dayNum];
 }
 
 /**

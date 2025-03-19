@@ -11,22 +11,35 @@
  * @param string $footerText Optional footer text
  * @param string $footerIcon Optional footer icon (Font Awesome class)
  */
+
+// Validate required variables
+if (!isset($title)) {
+    $title = 'ข้อมูลสถิติ';
+}
+
+if (!isset($value)) {
+    $value = '-';
+}
+
+// Set default values for optional variables
+$icon = $icon ?? 'fas fa-calendar';
+$colorClass = $colorClass ?? 'primary';
 ?>
 
 <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-<?php echo isset($colorClass) ? $colorClass : 'primary'; ?> shadow h-100 py-2">
+    <div class="card border-left-<?php echo $colorClass; ?> shadow h-100 py-2">
         <div class="card-body">
             <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
-                    <div class="text-xs font-weight-bold text-<?php echo isset($colorClass) ? $colorClass : 'primary'; ?> text-uppercase mb-1">
-                        <?php echo $title; ?>
+                    <div class="text-xs font-weight-bold text-<?php echo $colorClass; ?> text-uppercase mb-1">
+                        <?php echo htmlspecialchars($title); ?>
                     </div>
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        <?php echo $value; ?>
+                        <?php echo htmlspecialchars($value); ?>
                     </div>
                 </div>
                 <div class="col-auto">
-                    <i class="<?php echo isset($icon) ? $icon : 'fas fa-calendar'; ?> fa-2x text-gray-300"></i>
+                    <i class="<?php echo $icon; ?> fa-2x text-gray-300"></i>
                 </div>
             </div>
             
@@ -36,7 +49,7 @@
                         <?php if (isset($footerIcon)): ?>
                             <i class="<?php echo $footerIcon; ?> me-1"></i>
                         <?php endif; ?>
-                        <?php echo $footerText; ?>
+                        <?php echo htmlspecialchars($footerText); ?>
                     </div>
                 </div>
             <?php endif; ?>

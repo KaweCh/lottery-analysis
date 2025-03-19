@@ -1,4 +1,5 @@
 <?php
+
 /**
  * statistical_functions.php
  * 
@@ -15,9 +16,10 @@ require_once __DIR__ . '/functions.php';
  * @param array $filters Additional filters
  * @return array Digit distribution data
  */
-function getDigitDistribution($field, $digits = 3, $filters = []) {
+function getDigitDistribution($field, $digits = 3, $filters = [])
+{
     global $conn;
-    
+
     // Validate field to prevent SQL injection
     $validFields = ['first_prize_last3', 'last3f', 'last3b', 'last2'];
     if (!in_array($field, $validFields)) {
@@ -26,41 +28,41 @@ function getDigitDistribution($field, $digits = 3, $filters = []) {
             'message' => 'Invalid field specified'
         ];
     }
-    
+
     // Build SQL query with filters
     $sql = "SELECT `$field`, COUNT(*) as count FROM lotto_records WHERE `$field` IS NOT NULL";
-    
+
     // Apply filters
     if (!empty($filters['start_date'])) {
         $sql .= " AND dateValue >= '" . $conn->real_escape_string($filters['start_date']) . "'";
     }
-    
+
     if (!empty($filters['end_date'])) {
         $sql .= " AND dateValue <= '" . $conn->real_escape_string($filters['end_date']) . "'";
     }
-    
+
     if (!empty($filters['day_of_week'])) {
         $sql .= " AND day_of_week = '" . $conn->real_escape_string($filters['day_of_week']) . "'";
     }
-    
+
     if (!empty($filters['date_day'])) {
         $sql .= " AND DAY(dateValue) = " . intval($filters['date_day']);
     }
-    
+
     if (!empty($filters['date_month'])) {
         $sql .= " AND MONTH(dateValue) = " . intval($filters['date_month']);
     }
-    
+
     // Group and order
     $sql .= " GROUP BY `$field` ORDER BY count DESC";
-    
+
     // Apply limit if specified
     if (!empty($filters['limit'])) {
         $sql .= " LIMIT " . intval($filters['limit']);
     }
-    
+
     $result = $conn->query($sql);
-    
+
     if (!$result) {
         return [
             'status' => 'error',
@@ -68,10 +70,10 @@ function getDigitDistribution($field, $digits = 3, $filters = []) {
             'sql' => $sql
         ];
     }
-    
+
     $distribution = [];
     $totalCount = 0;
-    
+
     while ($row = $result->fetch_assoc()) {
         $distribution[] = [
             'digit' => $row[$field],
@@ -79,12 +81,12 @@ function getDigitDistribution($field, $digits = 3, $filters = []) {
         ];
         $totalCount += intval($row['count']);
     }
-    
+
     // Calculate percentages
     foreach ($distribution as &$item) {
         $item['percentage'] = calculatePercentage($item['count'], $totalCount, 2);
     }
-    
+
     return [
         'status' => 'success',
         'distribution' => $distribution,
@@ -102,9 +104,10 @@ function getDigitDistribution($field, $digits = 3, $filters = []) {
  * @param array $filters Additional filters
  * @return array Position-based frequency analysis
  */
-function getDigitPositionFrequency($field, $filters = []) {
+function getDigitPositionFrequency($field, $filters = [])
+{
     global $conn;
-    
+
     // Validate field to prevent SQL injection
     $validFields = ['first_prize', 'first_prize_last3', 'last3f', 'last3b', 'last2'];
     if (!in_array($field, $validFields)) {
@@ -113,7 +116,7 @@ function getDigitPositionFrequency($field, $filters = []) {
             'message' => 'Invalid field specified'
         ];
     }
-    
+
     // Determine number of positions based on field
     $positions = 0;
     switch ($field) {
@@ -129,41 +132,41 @@ function getDigitPositionFrequency($field, $filters = []) {
             $positions = 2;
             break;
     }
-    
+
     // Build SQL query with filters
     $sql = "SELECT `$field` FROM lotto_records WHERE `$field` IS NOT NULL";
-    
+
     // Apply filters
     if (!empty($filters['start_date'])) {
         $sql .= " AND dateValue >= '" . $conn->real_escape_string($filters['start_date']) . "'";
     }
-    
+
     if (!empty($filters['end_date'])) {
         $sql .= " AND dateValue <= '" . $conn->real_escape_string($filters['end_date']) . "'";
     }
-    
+
     if (!empty($filters['day_of_week'])) {
         $sql .= " AND day_of_week = '" . $conn->real_escape_string($filters['day_of_week']) . "'";
     }
-    
+
     if (!empty($filters['date_day'])) {
         $sql .= " AND DAY(dateValue) = " . intval($filters['date_day']);
     }
-    
+
     if (!empty($filters['date_month'])) {
         $sql .= " AND MONTH(dateValue) = " . intval($filters['date_month']);
     }
-    
+
     // Order by date
     $sql .= " ORDER BY dateValue DESC";
-    
+
     // Apply limit if specified
     if (!empty($filters['limit'])) {
         $sql .= " LIMIT " . intval($filters['limit']);
     }
-    
+
     $result = $conn->query($sql);
-    
+
     if (!$result) {
         return [
             'status' => 'error',
@@ -171,26 +174,26 @@ function getDigitPositionFrequency($field, $filters = []) {
             'sql' => $sql
         ];
     }
-    
+
     // Initialize position frequency arrays
     $positionFrequency = [];
     for ($i = 0; $i < $positions; $i++) {
         $positionFrequency[$i] = array_fill(0, 10, 0); // 0-9 for each position
     }
-    
+
     $totalCount = 0;
-    
+
     while ($row = $result->fetch_assoc()) {
         $digits = str_pad($row[$field], $positions, '0', STR_PAD_LEFT);
-        
+
         for ($i = 0; $i < $positions; $i++) {
             $digit = intval($digits[$i]);
             $positionFrequency[$i][$digit]++;
         }
-        
+
         $totalCount++;
     }
-    
+
     // Calculate percentages for each position
     $positionPercentages = [];
     for ($i = 0; $i < $positions; $i++) {
@@ -199,7 +202,7 @@ function getDigitPositionFrequency($field, $filters = []) {
             $positionPercentages[$i][$j] = calculatePercentage($positionFrequency[$i][$j], $totalCount, 2);
         }
     }
-    
+
     return [
         'status' => 'success',
         'frequency' => $positionFrequency,
@@ -219,18 +222,19 @@ function getDigitPositionFrequency($field, $filters = []) {
  * @param int $minEntries Minimum entries required for analysis
  * @return array Day-based pattern analysis
  */
-function getDayOfWeekPatterns($field, $dayOfWeek, $minEntries = 20) {
+function getDayOfWeekPatterns($field, $dayOfWeek, $minEntries = 20)
+{
     $filters = [
         'day_of_week' => $dayOfWeek,
         'limit' => 200 // Get a good sample size
     ];
-    
+
     $distribution = getDigitDistribution($field, null, $filters);
-    
+
     if ($distribution['status'] === 'error') {
         return $distribution;
     }
-    
+
     if ($distribution['total_count'] < $minEntries) {
         return [
             'status' => 'error',
@@ -238,7 +242,7 @@ function getDayOfWeekPatterns($field, $dayOfWeek, $minEntries = 20) {
             'entries_found' => $distribution['total_count']
         ];
     }
-    
+
     return $distribution;
 }
 
@@ -250,18 +254,19 @@ function getDayOfWeekPatterns($field, $dayOfWeek, $minEntries = 20) {
  * @param int $minEntries Minimum entries required for analysis
  * @return array Date-based pattern analysis
  */
-function getDatePatterns($field, $dateDay, $minEntries = 20) {
+function getDatePatterns($field, $dateDay, $minEntries = 20)
+{
     $filters = [
         'date_day' => $dateDay,
         'limit' => 200 // Get a good sample size
     ];
-    
+
     $distribution = getDigitDistribution($field, null, $filters);
-    
+
     if ($distribution['status'] === 'error') {
         return $distribution;
     }
-    
+
     if ($distribution['total_count'] < $minEntries) {
         return [
             'status' => 'error',
@@ -269,7 +274,7 @@ function getDatePatterns($field, $dateDay, $minEntries = 20) {
             'entries_found' => $distribution['total_count']
         ];
     }
-    
+
     return $distribution;
 }
 
@@ -281,18 +286,19 @@ function getDatePatterns($field, $dateDay, $minEntries = 20) {
  * @param int $minEntries Minimum entries required for analysis
  * @return array Month-based pattern analysis
  */
-function getMonthPatterns($field, $month, $minEntries = 10) {
+function getMonthPatterns($field, $month, $minEntries = 10)
+{
     $filters = [
         'date_month' => $month,
         'limit' => 100 // Get a good sample size
     ];
-    
+
     $distribution = getDigitDistribution($field, null, $filters);
-    
+
     if ($distribution['status'] === 'error') {
         return $distribution;
     }
-    
+
     if ($distribution['total_count'] < $minEntries) {
         return [
             'status' => 'error',
@@ -300,7 +306,7 @@ function getMonthPatterns($field, $month, $minEntries = 10) {
             'entries_found' => $distribution['total_count']
         ];
     }
-    
+
     return $distribution;
 }
 
@@ -312,29 +318,30 @@ function getMonthPatterns($field, $month, $minEntries = 10) {
  * @param int $minEntries Minimum entries required for analysis
  * @return array Combined criteria pattern analysis
  */
-function getCombinedPatterns($field, $criteria, $minEntries = 10) {
+function getCombinedPatterns($field, $criteria, $minEntries = 10)
+{
     $filters = [];
-    
+
     if (!empty($criteria['day_of_week'])) {
         $filters['day_of_week'] = $criteria['day_of_week'];
     }
-    
+
     if (!empty($criteria['date_day'])) {
         $filters['date_day'] = $criteria['date_day'];
     }
-    
+
     if (!empty($criteria['date_month'])) {
         $filters['date_month'] = $criteria['date_month'];
     }
-    
+
     $filters['limit'] = 100;
-    
+
     $distribution = getDigitDistribution($field, null, $filters);
-    
+
     if ($distribution['status'] === 'error') {
         return $distribution;
     }
-    
+
     if ($distribution['total_count'] < $minEntries) {
         return [
             'status' => 'error',
@@ -342,7 +349,7 @@ function getCombinedPatterns($field, $criteria, $minEntries = 10) {
             'entries_found' => $distribution['total_count']
         ];
     }
-    
+
     return $distribution;
 }
 
@@ -353,9 +360,10 @@ function getCombinedPatterns($field, $criteria, $minEntries = 10) {
  * @param int $lookbackPeriod Number of previous draws to analyze
  * @return array Pattern analysis results
  */
-function identifyRecurringPatterns($field, $lookbackPeriod = 50) {
+function identifyRecurringPatterns($field, $lookbackPeriod = 50)
+{
     global $conn;
-    
+
     // Validate field to prevent SQL injection
     $validFields = ['first_prize_last3', 'last3f', 'last3b', 'last2'];
     if (!in_array($field, $validFields)) {
@@ -364,15 +372,15 @@ function identifyRecurringPatterns($field, $lookbackPeriod = 50) {
             'message' => 'Invalid field specified'
         ];
     }
-    
+
     // Get lottery results for analysis
     $sql = "SELECT dateValue, `$field` FROM lotto_records 
             WHERE `$field` IS NOT NULL 
             ORDER BY dateValue DESC 
             LIMIT " . intval($lookbackPeriod);
-    
+
     $result = $conn->query($sql);
-    
+
     if (!$result) {
         return [
             'status' => 'error',
@@ -380,64 +388,65 @@ function identifyRecurringPatterns($field, $lookbackPeriod = 50) {
             'sql' => $sql
         ];
     }
-    
+
     // Extract the digit sequences
     $sequences = [];
     $dates = [];
-    
+
     while ($row = $result->fetch_assoc()) {
         if (!empty($row[$field])) {
             $sequences[] = trim($row[$field]);
             $dates[] = $row['dateValue'];
         }
     }
-    
+
     // Reverse arrays to have chronological order
     $sequences = array_reverse($sequences);
     $dates = array_reverse($dates);
-    
+
     // Look for repeating patterns
     $patterns = [];
     $maxPatternLength = min(5, floor(count($sequences) / 2));
-    
+
     for ($patternLength = 2; $patternLength <= $maxPatternLength; $patternLength++) {
         for ($startPos = 0; $startPos < count($sequences) - $patternLength - 1; $startPos++) {
             $pattern = array_slice($sequences, $startPos, $patternLength);
             $patternStr = implode('-', $pattern);
-            
+
             // Look for this pattern in the remaining sequence
-        for ($checkPos = $startPos + $patternLength; $checkPos < count($sequences) - $patternLength + 1; $checkPos++) {
-            $checkPattern = array_slice($sequences, $checkPos, $patternLength);
-            $checkPatternStr = implode('-', $checkPattern);
-            
-            if ($patternStr === $checkPatternStr) {
-                // Pattern found
-                if (!isset($patterns[$patternStr])) {
-                    $patterns[$patternStr] = [
-                        'pattern' => $pattern,
-                        'occurrences' => 0,
-                        'last_seen' => $startPos,
-                        'positions' => [],
-                        'dates' => []
-                    ];
-                }
-                
-                $patterns[$patternStr]['occurrences']++;
-                $patterns[$patternStr]['positions'][] = $checkPos;
-                $patterns[$patternStr]['dates'][] = $dates[$checkPos];
-                
-                if ($checkPos < $patterns[$patternStr]['last_seen']) {
-                    $patterns[$patternStr]['last_seen'] = $checkPos;
+            for ($checkPos = $startPos + $patternLength; $checkPos < count($sequences) - $patternLength + 1; $checkPos++) {
+                $checkPattern = array_slice($sequences, $checkPos, $patternLength);
+                $checkPatternStr = implode('-', $checkPattern);
+
+                if ($patternStr === $checkPatternStr) {
+                    // Pattern found
+                    if (!isset($patterns[$patternStr])) {
+                        $patterns[$patternStr] = [
+                            'pattern' => $pattern,
+                            'occurrences' => 0,
+                            'last_seen' => $startPos,
+                            'positions' => [],
+                            'dates' => []
+                        ];
+                    }
+
+                    $patterns[$patternStr]['occurrences']++;
+                    $patterns[$patternStr]['positions'][] = $checkPos;
+                    $patterns[$patternStr]['dates'][] = $dates[$checkPos];
+
+                    if ($checkPos < $patterns[$patternStr]['last_seen']) {
+                        $patterns[$patternStr]['last_seen'] = $checkPos;
+                    }
                 }
             }
         }
     }
-    
+
     // Sort patterns by number of occurrences
-    uasort($patterns, function($a, $b) {
+    uasort($patterns, function ($a, $b) {
         return $b['occurrences'] - $a['occurrences'];
     });
-    
+
     return [
         'status' => 'success',
         'patterns' => $patterns,
@@ -454,9 +463,10 @@ function identifyRecurringPatterns($field, $lookbackPeriod = 50) {
  * @param array $filters Additional filters
  * @return array Pair frequency analysis
  */
-function getDigitPairFrequency($field, $filters = []) {
+function getDigitPairFrequency($field, $filters = [])
+{
     global $conn;
-    
+
     // Validate field to prevent SQL injection
     $validFields = ['first_prize_last3', 'last3f', 'last3b', 'last2'];
     if (!in_array($field, $validFields)) {
@@ -465,41 +475,41 @@ function getDigitPairFrequency($field, $filters = []) {
             'message' => 'Invalid field specified'
         ];
     }
-    
+
     // Build SQL query with filters
     $sql = "SELECT `$field` FROM lotto_records WHERE `$field` IS NOT NULL";
-    
+
     // Apply filters
     if (!empty($filters['start_date'])) {
         $sql .= " AND dateValue >= '" . $conn->real_escape_string($filters['start_date']) . "'";
     }
-    
+
     if (!empty($filters['end_date'])) {
         $sql .= " AND dateValue <= '" . $conn->real_escape_string($filters['end_date']) . "'";
     }
-    
+
     if (!empty($filters['day_of_week'])) {
         $sql .= " AND day_of_week = '" . $conn->real_escape_string($filters['day_of_week']) . "'";
     }
-    
+
     if (!empty($filters['date_day'])) {
         $sql .= " AND DAY(dateValue) = " . intval($filters['date_day']);
     }
-    
+
     if (!empty($filters['date_month'])) {
         $sql .= " AND MONTH(dateValue) = " . intval($filters['date_month']);
     }
-    
+
     // Order by date
     $sql .= " ORDER BY dateValue DESC";
-    
+
     // Apply limit if specified
     if (!empty($filters['limit'])) {
         $sql .= " LIMIT " . intval($filters['limit']);
     }
-    
+
     $result = $conn->query($sql);
-    
+
     if (!$result) {
         return [
             'status' => 'error',
@@ -507,38 +517,38 @@ function getDigitPairFrequency($field, $filters = []) {
             'sql' => $sql
         ];
     }
-    
+
     // Initialize pair frequency array
     $pairFrequency = [];
     $totalCount = 0;
-    
+
     while ($row = $result->fetch_assoc()) {
         $value = trim($row[$field]);
         $length = strlen($value);
-        
+
         // Process all possible pairs in the value
         for ($i = 0; $i < $length - 1; $i++) {
             $pair = substr($value, $i, 2);
-            
+
             if (!isset($pairFrequency[$pair])) {
                 $pairFrequency[$pair] = 0;
             }
-            
+
             $pairFrequency[$pair]++;
         }
-        
+
         $totalCount++;
     }
-    
+
     // Sort by frequency
     arsort($pairFrequency);
-    
+
     // Calculate percentages
     $pairPercentages = [];
     foreach ($pairFrequency as $pair => $count) {
         $pairPercentages[$pair] = calculatePercentage($count, $totalCount, 2);
     }
-    
+
     return [
         'status' => 'success',
         'frequency' => $pairFrequency,
@@ -556,9 +566,10 @@ function getDigitPairFrequency($field, $filters = []) {
  * @param int $lookbackPeriod Number of previous draws to analyze
  * @return array Trend analysis results
  */
-function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
+function getDigitTrendAnalysis($field, $lookbackPeriod = 50)
+{
     global $conn;
-    
+
     // Validate field to prevent SQL injection
     $validFields = ['first_prize_last3', 'last3f', 'last3b', 'last2'];
     if (!in_array($field, $validFields)) {
@@ -567,15 +578,15 @@ function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
             'message' => 'Invalid field specified'
         ];
     }
-    
+
     // Get lottery results for analysis
     $sql = "SELECT dateValue, `$field` FROM lotto_records 
             WHERE `$field` IS NOT NULL 
             ORDER BY dateValue DESC 
             LIMIT " . intval($lookbackPeriod);
-    
+
     $result = $conn->query($sql);
-    
+
     if (!$result) {
         return [
             'status' => 'error',
@@ -583,22 +594,22 @@ function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
             'sql' => $sql
         ];
     }
-    
+
     // Extract the digit sequences
     $sequences = [];
     $dates = [];
-    
+
     while ($row = $result->fetch_assoc()) {
         if (!empty($row[$field])) {
             $sequences[] = trim($row[$field]);
             $dates[] = $row['dateValue'];
         }
     }
-    
+
     // Reverse arrays to have chronological order
     $sequences = array_reverse($sequences);
     $dates = array_reverse($dates);
-    
+
     // Analyze trends
     $trends = [
         'increasing' => [],
@@ -606,10 +617,10 @@ function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
         'oscillating' => [],
         'stable' => []
     ];
-    
+
     // Get the numeric value of each sequence
     $numericValues = array_map('intval', $sequences);
-    
+
     // Analyze the overall trend
     $trendPoints = [];
     foreach ($numericValues as $index => $value) {
@@ -618,7 +629,7 @@ function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
             'value' => $value
         ];
     }
-    
+
     // Calculate differences between consecutive draws
     $differences = [];
     for ($i = 1; $i < count($numericValues); $i++) {
@@ -631,16 +642,16 @@ function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
             'to_value' => $numericValues[$i]
         ];
     }
-    
+
     // Identify consecutive increasing or decreasing patterns
     $currentPattern = '';
     $patternStart = 0;
     $patternLength = 1;
-    
+
     for ($i = 1; $i < count($differences); $i++) {
         $prevDiff = $differences[$i - 1]['diff'];
         $currDiff = $differences[$i]['diff'];
-        
+
         if (($prevDiff > 0 && $currDiff > 0) || ($prevDiff < 0 && $currDiff < 0)) {
             // Continuing the same pattern
             if ($currentPattern === '') {
@@ -659,12 +670,12 @@ function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
                     'end_date' => $dates[$patternStart + $patternLength]
                 ];
             }
-            
+
             $currentPattern = '';
             $patternLength = 1;
         }
     }
-    
+
     // Record final pattern if any
     if ($patternLength >= 3 && $currentPattern !== '') {
         $trends[$currentPattern][] = [
@@ -674,13 +685,13 @@ function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
             'end_date' => $dates[$patternStart + $patternLength - 1]
         ];
     }
-    
+
     // Identify oscillating patterns (alternating up and down)
     for ($i = 2; $i < count($differences); $i++) {
         $diff1 = $differences[$i - 2]['diff'];
         $diff2 = $differences[$i - 1]['diff'];
         $diff3 = $differences[$i]['diff'];
-        
+
         if (($diff1 * $diff2 < 0) && ($diff2 * $diff3 < 0)) {
             // Alternating signs - oscillating pattern
             $trends['oscillating'][] = [
@@ -700,15 +711,15 @@ function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
             ];
         }
     }
-    
+
     // Identify stable patterns (values within a small range)
     $rangeThreshold = strlen($sequences[0]) == 3 ? 100 : 10; // Adjust based on field length
-    
+
     for ($i = 0; $i < count($numericValues) - 3; $i++) {
         $values = array_slice($numericValues, $i, 4);
         $minValue = min($values);
         $maxValue = max($values);
-        
+
         if (($maxValue - $minValue) <= $rangeThreshold) {
             $trends['stable'][] = [
                 'start' => $i,
@@ -718,7 +729,7 @@ function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
             ];
         }
     }
-    
+
     return [
         'status' => 'success',
         'sequences' => $sequences,
@@ -738,19 +749,20 @@ function getDigitTrendAnalysis($field, $lookbackPeriod = 50) {
  * @param array $results Calculation results
  * @return bool Success status
  */
-function saveStatisticalHistory($calculationType, $parameters, $results) {
+function saveStatisticalHistory($calculationType, $parameters, $results)
+{
     global $conn;
-    
+
     $sql = "INSERT INTO statistical_history 
             (calculation_date, calculation_type, parameters, result_summary) 
             VALUES (NOW(), ?, ?, ?)";
-    
+
     $stmt = $conn->prepare($sql);
     $paramJson = json_encode($parameters);
     $resultJson = json_encode($results);
-    
+
     $stmt->bind_param("sss", $calculationType, $paramJson, $resultJson);
-    
+
     return $stmt->execute();
 }
 
@@ -761,19 +773,20 @@ function saveStatisticalHistory($calculationType, $parameters, $results) {
  * @param int $limit Maximum number of records to return
  * @return array Statistical history records
  */
-function getStatisticalHistory($calculationType = null, $limit = 10) {
+function getStatisticalHistory($calculationType = null, $limit = 10)
+{
     global $conn;
-    
+
     $sql = "SELECT * FROM statistical_history ";
-    
+
     if ($calculationType !== null) {
         $sql .= "WHERE calculation_type = '" . $conn->real_escape_string($calculationType) . "' ";
     }
-    
+
     $sql .= "ORDER BY calculation_date DESC LIMIT " . intval($limit);
-    
+
     $result = $conn->query($sql);
-    
+
     if (!$result) {
         return [
             'status' => 'error',
@@ -781,19 +794,18 @@ function getStatisticalHistory($calculationType = null, $limit = 10) {
             'sql' => $sql
         ];
     }
-    
+
     $history = [];
-    
+
     while ($row = $result->fetch_assoc()) {
         $row['parameters'] = json_decode($row['parameters'], true);
         $row['result_summary'] = json_decode($row['result_summary'], true);
         $history[] = $row;
     }
-    
+
     return [
         'status' => 'success',
         'history' => $history,
         'count' => count($history)
     ];
 }
-?>

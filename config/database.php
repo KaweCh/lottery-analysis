@@ -8,9 +8,9 @@
 // Database configuration
 $db_config = [
     'host'     => 'localhost',
-    'username' => 'lotto_user',
-    'password' => 'your_password_here',
-    'dbname'   => 'lotto',
+    'username' => 'root',
+    'password' => '',
+    'dbname'   => 'lotto_process',
     'charset'  => 'utf8mb4',
     'port'     => 3306
 ];

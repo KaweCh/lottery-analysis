@@ -10,10 +10,10 @@ $pageTitle = 'หน้าหลัก';
 $activePage = 'home';
 
 // Include functions and models
-require_once __DIR__ . '/includes/functions.php';
-require_once __DIR__ . '/models/LotteryData.php';
-require_once __DIR__ . '/models/PredictionModel.php';
-require_once __DIR__ . '/models/AccuracyTracker.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../models/LotteryData.php';
+require_once __DIR__ . '/../models/PredictionModel.php';
+require_once __DIR__ . '/../models/AccuracyTracker.php';
 
 // Initialize models
 $connection = connectDatabase();
@@ -36,7 +36,7 @@ $latestPredictions = $predictionModel->getStoredPredictions($nextDrawDate, 'firs
 $latestPredictions2 = $predictionModel->getStoredPredictions($nextDrawDate, 'last2');
 
 // Include header
-include __DIR__ . '/templates/header.php';
+include __DIR__ . '/../templates/header.php';
 ?>
 
 <div class="row">
@@ -61,14 +61,14 @@ include __DIR__ . '/templates/header.php';
 <div class="row">
     <?php 
     // Total Predictions Card
-    include_once __DIR__ . '/templates/components/stat_card.php';
+    include_once __DIR__ . '/../templates/components/stat_card.php';
     $title = "การทำนายทั้งหมด";
     $value = number_format($summaryStats['total_predictions']);
     $icon = "fas fa-calculator";
     $colorClass = "primary";
     $footerText = "เก็บข้อมูลทั้งหมด";
     $footerIcon = "fas fa-database";
-    include __DIR__ . '/templates/components/stat_card.php';
+    include __DIR__ . '/../templates/components/stat_card.php';
     
     // Accuracy Card
     $title = "ความแม่นยำเฉลี่ย";
@@ -77,7 +77,7 @@ include __DIR__ . '/templates/header.php';
     $colorClass = "success";
     $footerText = "ประเมินจากการทำนายที่ผ่านมาทั้งหมด";
     $footerIcon = "fas fa-history";
-    include __DIR__ . '/templates/components/stat_card.php';
+    include __DIR__ . '/../templates/components/stat_card.php';
     
     // Next Draw Card
     $title = "งวดถัดไป";
@@ -86,7 +86,7 @@ include __DIR__ . '/templates/header.php';
     $colorClass = "info";
     $footerText = getThaiDayOfWeek(new DateTime($nextDrawDate));
     $footerIcon = "fas fa-calendar-day";
-    include __DIR__ . '/templates/components/stat_card.php';
+    include __DIR__ . '/../templates/components/stat_card.php';
     
     // Data Records Card
     $title = "ข้อมูลทั้งหมด";
@@ -95,7 +95,7 @@ include __DIR__ . '/templates/header.php';
     $colorClass = "warning";
     $footerText = "จากปี 2550 - ปัจจุบัน";
     $footerIcon = "fas fa-history";
-    include __DIR__ . '/templates/components/stat_card.php';
+    include __DIR__ . '/../templates/components/stat_card.php';
     ?>
 </div>
 
@@ -253,7 +253,7 @@ include __DIR__ . '/templates/header.php';
             $chartId = 'accuracyChart';
             $title = 'ความแม่นยำของการทำนาย';
             $description = 'แนวโน้มความแม่นยำของการทำนายในช่วง 6 เดือนที่ผ่านมา';
-            include __DIR__ . '/templates/components/chart_container.php';
+            include __DIR__ . '/../templates/components/chart_container.php';
             
             // Add JavaScript to create chart
             $inlineJs = "

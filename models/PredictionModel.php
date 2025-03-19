@@ -1,16 +1,23 @@
 <?php
+
 /**
  * PredictionModel.php
  * 
  * Model for generating lottery number predictions based on statistical analysis
  */
+
 namespace Models;
+
+// Ensure all required models are imported
+require_once __DIR__ . '/LotteryData.php';
+require_once __DIR__ . '/StatisticalAnalysis.php';
 
 class PredictionModel
 {
     private $conn;
     private $statisticalAnalysis;
-    
+    private $lotteryData;
+
     /**
      * Constructor
      */
@@ -18,8 +25,22 @@ class PredictionModel
     {
         $this->conn = $connection;
         $this->statisticalAnalysis = new StatisticalAnalysis($connection);
+        $this->lotteryData = new LotteryData($connection);
     }
-    
+
+    /**
+     * Get total predictions count
+     * 
+     * @return int Total number of predictions
+     */
+    public function getTotalPredictions()
+    {
+        $sql = "SELECT COUNT(*) as total FROM lottery_predictions";
+        $result = $this->conn->query($sql);
+        $row = $result->fetch_assoc();
+        return $row['total'];
+    }
+
     /**
      * Generate predictions for digit type
      * 
@@ -37,7 +58,7 @@ class PredictionModel
                 'message' => 'ประเภทเลขที่ระบุไม่ถูกต้อง'
             ];
         }
-        
+
         // Validate target date
         if (!$this->isValidDateFormat($targetDate)) {
             return [
@@ -45,42 +66,42 @@ class PredictionModel
                 'message' => 'รูปแบบวันที่ไม่ถูกต้อง'
             ];
         }
-        
+
         // Parse target date
         $date = new \DateTime($targetDate);
         $dayOfWeek = $this->getThaiDayOfWeek($date->format('N'));
         $day = $date->format('d');
         $month = $date->format('m');
-        
+
         // Get analysis for different patterns
         $dayAnalysis = $this->statisticalAnalysis->analyzeDayOfWeekPatterns($digitType, $dayOfWeek, 10);
         $dateAnalysis = $this->statisticalAnalysis->analyzeDatePatterns($digitType, $day, 10);
         $monthAnalysis = $this->statisticalAnalysis->analyzeMonthPatterns($digitType, $month, 5);
-        
+
         $combinedCriteria = [
             'day_of_week' => $dayOfWeek,
             'date_day' => $day,
             'date_month' => $month
         ];
-        
+
         $combinedAnalysis = $this->statisticalAnalysis->analyzeCombinedPatterns($digitType, $combinedCriteria, 3);
-        
+
         // Get pattern analysis
         $patternAnalysis = $this->statisticalAnalysis->identifyRecurringPatterns($digitType, 50);
-        
+
         // Get pair frequency analysis
         $pairAnalysis = $this->statisticalAnalysis->analyzeDigitPairFrequency($digitType, ['limit' => 100]);
-        
+
         // Get digit position frequency
         $positionAnalysis = null;
         if ($digitType !== 'last2') {
             $digits = ($digitType === 'first_prize_last3' || $digitType === 'last3f' || $digitType === 'last3b') ? 3 : 2;
             $positionAnalysis = $this->statisticalAnalysis->analyzeDigitPositionFrequency($digitType, ['limit' => 100]);
         }
-        
+
         // Get trend analysis
         $trendAnalysis = $this->statisticalAnalysis->getDigitTrendAnalysis($digitType, 20);
-        
+
         // Combine results with weighting
         $predictions = [];
         $weights = [
@@ -93,7 +114,7 @@ class PredictionModel
             'position' => 0.05,
             'trend' => 0.05
         ];
-        
+
         // Process day of week analysis
         if ($dayAnalysis['status'] === 'success') {
             foreach (array_slice($dayAnalysis['distribution'], 0, 10) as $item) {
@@ -104,7 +125,7 @@ class PredictionModel
                 $predictions[$digit] += ($item['percentage'] / 100) * $weights['day_of_week'];
             }
         }
-        
+
         // Process date analysis
         if ($dateAnalysis['status'] === 'success') {
             foreach (array_slice($dateAnalysis['distribution'], 0, 10) as $item) {
@@ -115,7 +136,7 @@ class PredictionModel
                 $predictions[$digit] += ($item['percentage'] / 100) * $weights['date'];
             }
         }
-        
+
         // Process month analysis
         if ($monthAnalysis['status'] === 'success') {
             foreach (array_slice($monthAnalysis['distribution'], 0, 10) as $item) {
@@ -126,7 +147,7 @@ class PredictionModel
                 $predictions[$digit] += ($item['percentage'] / 100) * $weights['month'];
             }
         }
-        
+
         // Process combined analysis
         if ($combinedAnalysis['status'] === 'success') {
             foreach (array_slice($combinedAnalysis['distribution'], 0, 10) as $item) {
@@ -137,29 +158,29 @@ class PredictionModel
                 $predictions[$digit] += ($item['percentage'] / 100) * $weights['combined'];
             }
         }
-        
+
         // Process pattern analysis
         if ($patternAnalysis['status'] === 'success') {
             $patternCount = 0;
             foreach ($patternAnalysis['patterns'] as $patternStr => $patternData) {
                 if ($patternCount >= 5) break;
-                
+
                 $lastDigit = end($patternData['pattern']);
                 if (!isset($predictions[$lastDigit])) {
                     $predictions[$lastDigit] = 0;
                 }
-                
+
                 $patternWeight = min(1, $patternData['occurrences'] / 10);
                 $predictions[$lastDigit] += $patternWeight * $weights['patterns'];
                 $patternCount++;
             }
         }
-        
+
         // Process pair frequency analysis
         if ($pairAnalysis['status'] === 'success') {
             $digitLength = ($digitType === 'last2') ? 2 : 3;
             $requiredPairs = [];
-            
+
             // Generate all possible digit combinations
             if ($digitLength === 2) {
                 for ($i = 0; $i <= 9; $i++) {
@@ -176,7 +197,7 @@ class PredictionModel
                     }
                 }
             }
-            
+
             // Fill in found pair frequencies
             foreach ($pairAnalysis['pairs'] as $pairData) {
                 $pair = $pairData['pair'];
@@ -188,7 +209,7 @@ class PredictionModel
                     }
                 }
             }
-            
+
             // Merge pair predictions with main predictions
             foreach ($requiredPairs as $digit => $weight) {
                 if (!isset($predictions[$digit])) {
@@ -197,71 +218,71 @@ class PredictionModel
                 $predictions[$digit] += $weight;
             }
         }
-        
+
         // Process position frequency analysis
         if ($positionAnalysis !== null && $positionAnalysis['status'] === 'success') {
             $digitLength = $positionAnalysis['positions'];
             $allDigits = [];
-            
+
             // Generate all possible digit combinations for the specified length
             for ($i = 0; $i < pow(10, $digitLength); $i++) {
                 $allDigits[] = str_pad($i, $digitLength, '0', STR_PAD_LEFT);
             }
-            
+
             foreach ($allDigits as $digit) {
                 $positionScore = 0;
-                
+
                 for ($i = 0; $i < $digitLength; $i++) {
                     $positionValue = intval($digit[$i]);
                     $positionScore += ($positionAnalysis['percentages'][$i][$positionValue] / 100);
                 }
-                
+
                 $positionScore /= $digitLength;
-                
+
                 if (!isset($predictions[$digit])) {
                     $predictions[$digit] = 0;
                 }
                 $predictions[$digit] += $positionScore * $weights['position'];
             }
         }
-        
+
         // Process trend analysis
         if ($trendAnalysis['status'] === 'success') {
             // Identify digits that are part of increasing/decreasing trends
             foreach ($trendAnalysis['trends']['increasing'] as $trend) {
                 if (isset($trend['values']) && is_array($trend['values'])) {
                     $lastValue = end($trend['values']);
-                    
+
                     // Convert to appropriate string format
                     $trendDigit = str_pad($lastValue, ($digitType === 'last2' ? 2 : 3), '0', STR_PAD_LEFT);
-                    
+
                     if (!isset($predictions[$trendDigit])) {
                         $predictions[$trendDigit] = 0;
                     }
-                    
+
                     $predictions[$trendDigit] += (min(1, $trend['length'] / 5)) * $weights['trend'];
                 }
             }
-            
+
             foreach ($trendAnalysis['trends']['decreasing'] as $trend) {
                 if (isset($trend['values']) && is_array($trend['values'])) {
                     $lastValue = end($trend['values']);
-                    
+
                     // Convert to appropriate string format
                     $trendDigit = str_pad($lastValue, ($digitType === 'last2' ? 2 : 3), '0', STR_PAD_LEFT);
-                    
+
                     if (!isset($predictions[$trendDigit])) {
                         $predictions[$trendDigit] = 0;
                     }
-                    
+
                     $predictions[$trendDigit] += (min(1, $trend['length'] / 5)) * $weights['trend'];
                 }
             }
         }
-        
+
         // Sort predictions by confidence
         arsort($predictions);
-        
+
         // Format final predictions
         $formattedPredictions = [];
         $count = 0;
@@ -272,10 +293,10 @@ class PredictionModel
                 'rank' => ++$count
             ];
         }
-        
+
         // Store prediction in database
         $this->storePredictions($formattedPredictions, $digitType, $targetDate);
-        
+
         // Calculate analysis summary
         $analysisSummary = [
             'day_analysis_used' => $dayAnalysis['status'] === 'success',
@@ -292,7 +313,7 @@ class PredictionModel
             'month_pattern_count' => $monthAnalysis['status'] === 'success' ? $monthAnalysis['total_count'] : 0,
             'combined_pattern_count' => $combinedAnalysis['status'] === 'success' ? $combinedAnalysis['total_count'] : 0
         ];
-        
+
         // Save statistical history
         $this->saveStatisticalHistory('prediction', [
             'digit_type' => $digitType,
@@ -301,7 +322,7 @@ class PredictionModel
             'date_day' => $day,
             'date_month' => $month
         ], $analysisSummary);
-        
+
         return [
             'status' => 'success',
             'predictions' => $formattedPredictions,
@@ -313,7 +334,7 @@ class PredictionModel
             'analysis_summary' => $analysisSummary
         ];
     }
-    
+
     /**
      * Store predictions in the database
      * 
@@ -327,29 +348,29 @@ class PredictionModel
         // First, delete any existing predictions for this target date and digit type
         $sql = "DELETE FROM lottery_predictions 
                 WHERE target_draw_date = ? AND digit_type = ?";
-                
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("ss", $targetDate, $digitType);
         $stmt->execute();
-        
+
         // Insert new predictions
         $sql = "INSERT INTO lottery_predictions 
                 (prediction_date, target_draw_date, prediction_type, digit_type, 
                  predicted_digits, confidence) 
                 VALUES (NOW(), ?, 'statistical', ?, ?, ?)";
-        
+
         $stmt = $this->conn->prepare($sql);
-        
+
         foreach ($predictions as $prediction) {
             $digit = $prediction['digit'];
             $confidence = $prediction['confidence'];
             $stmt->bind_param("sssd", $targetDate, $digitType, $digit, $confidence);
             $stmt->execute();
         }
-        
+
         return true;
     }
-    
+
     /**
      * Get stored predictions for a specific target date
      * 
@@ -360,24 +381,24 @@ class PredictionModel
     public function getStoredPredictions($targetDate, $digitType = null)
     {
         $sql = "SELECT * FROM lottery_predictions WHERE target_draw_date = ?";
-        
+
         if ($digitType !== null) {
             $sql .= " AND digit_type = ?";
         }
-        
+
         $sql .= " ORDER BY confidence DESC";
-        
+
         $stmt = $this->conn->prepare($sql);
-        
+
         if ($digitType !== null) {
             $stmt->bind_param("ss", $targetDate, $digitType);
         } else {
             $stmt->bind_param("s", $targetDate);
         }
-        
+
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if (!$result) {
             return [
                 'status' => 'error',
@@ -385,13 +406,13 @@ class PredictionModel
                 'sql' => $sql
             ];
         }
-        
+
         $predictions = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $predictions[] = $row;
         }
-        
+
         return [
             'status' => 'success',
             'predictions' => $predictions,
@@ -400,7 +421,7 @@ class PredictionModel
             'count' => count($predictions)
         ];
     }
-    
+
     /**
      * Validate date format (YYYY-MM-DD)
      * 
@@ -414,7 +435,7 @@ class PredictionModel
         }
         return false;
     }
-    
+
     /**
      * Get Thai day of week from numeric day
      * 
@@ -432,10 +453,10 @@ class PredictionModel
             6 => 'เสาร์',
             7 => 'อาทิตย์'
         ];
-        
+
         return isset($thaiDays[$numericDay]) ? $thaiDays[$numericDay] : '';
     }
-    
+
     /**
      * Save statistical history to database
      * 
@@ -449,16 +470,16 @@ class PredictionModel
         $sql = "INSERT INTO statistical_history 
                 (calculation_date, calculation_type, parameters, result_summary) 
                 VALUES (NOW(), ?, ?, ?)";
-        
+
         $stmt = $this->conn->prepare($sql);
         $paramJson = json_encode($parameters);
         $resultJson = json_encode($results);
-        
+
         $stmt->bind_param("sss", $calculationType, $paramJson, $resultJson);
-        
+
         return $stmt->execute();
     }
-    
+
     /**
      * Generate learning-based predictions using historical accuracy
      * 
@@ -470,92 +491,92 @@ class PredictionModel
     {
         // Get statistical predictions first
         $statisticalPredictions = $this->generatePredictions($digitType, $targetDate);
-        
+
         if ($statisticalPredictions['status'] !== 'success') {
             return $statisticalPredictions;
         }
-        
+
         // Get historical accuracy for different methods
         $accuracyData = $this->getAccuracyHistory('yearly');
-        
+
         if ($accuracyData['status'] !== 'success' || $accuracyData['count'] < 3) {
             // Not enough historical data, fallback to statistical predictions
             return $statisticalPredictions;
         }
-        
+
         // Get past correct predictions to learn from patterns
         $sql = "SELECT p.* FROM lottery_predictions p 
                 WHERE p.was_correct = 1 
                 AND p.digit_type = ? 
                 ORDER BY p.prediction_date DESC 
                 LIMIT 50";
-                
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("s", $digitType);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 0) {
             // No correct historical predictions, fallback to statistical
             return $statisticalPredictions;
         }
-        
+
         $correctPredictions = [];
         while ($row = $result->fetch_assoc()) {
             $correctPredictions[] = $row;
         }
-        
+
         // Analyze which statistical methods were most successful
         $methodSuccessRate = [];
-        
+
         // Get statistical history for correct predictions
         $historyIds = [];
         foreach ($correctPredictions as $prediction) {
             $date = $prediction['prediction_date'];
             $historyIds[] = "calculation_date LIKE '" . substr($date, 0, 10) . "%'";
         }
-        
+
         if (empty($historyIds)) {
             return $statisticalPredictions;
         }
-        
+
         $sql = "SELECT * FROM statistical_history 
                 WHERE calculation_type = 'prediction' 
                 AND (" . implode(" OR ", $historyIds) . ")";
-                
+
         $result = $this->conn->query($sql);
-        
+
         if (!$result) {
             return $statisticalPredictions;
         }
-        
+
         $successfulMethods = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $paramData = json_decode($row['parameters'], true);
             $resultData = json_decode($row['result_summary'], true);
-            
+
             if ($paramData['digit_type'] === $digitType) {
                 foreach ($resultData as $method => $used) {
                     if ($used && strpos($method, '_used') !== false) {
                         $methodName = str_replace('_used', '', $method);
-                        
+
                         if (!isset($successfulMethods[$methodName])) {
                             $successfulMethods[$methodName] = 0;
                         }
-                        
+
                         $successfulMethods[$methodName]++;
                     }
                 }
             }
         }
-        
+
         // Calculate success rate for each method
         $totalSuccessfulPredictions = count($correctPredictions);
         foreach ($successfulMethods as $method => $count) {
             $methodSuccessRate[$method] = $count / $totalSuccessfulPredictions;
         }
-        
+
         // Adjust weights based on historical performance
         $weights = [
             'day_of_week' => 0.15,
@@ -567,7 +588,7 @@ class PredictionModel
             'position' => 0.05,
             'trend' => 0.05
         ];
-        
+
         // Apply learning adjustments to weights
         $totalRate = array_sum($methodSuccessRate);
         if ($totalRate > 0) {
@@ -577,18 +598,18 @@ class PredictionModel
                     $weights[$method] *= (1 + ($rate / $totalRate));
                 }
             }
-            
+
             // Normalize weights to ensure they sum to 1
             $totalWeight = array_sum($weights);
             foreach ($weights as &$weight) {
                 $weight = $weight / $totalWeight;
             }
         }
-        
+
         // Generate new predictions with adjusted weights
         // For simplicity, we'll reuse the statistical predictions but adjust confidence scores
         $adjustedPredictions = $statisticalPredictions['predictions'];
-        
+
         foreach ($adjustedPredictions as &$prediction) {
             // Apply a learning factor based on past correct predictions
             foreach ($correctPredictions as $correctPrediction) {
@@ -599,20 +620,20 @@ class PredictionModel
                 }
             }
         }
-        
+
         // Resort by adjusted confidence
-        usort($adjustedPredictions, function($a, $b) {
+        usort($adjustedPredictions, function ($a, $b) {
             return $b['confidence'] - $a['confidence'];
         });
-        
+
         // Renumber rankings
         foreach ($adjustedPredictions as $key => &$prediction) {
             $prediction['rank'] = $key + 1;
         }
-        
+
         // Store the learning-based predictions
         $this->storePredictions(array_slice($adjustedPredictions, 0, 20), $digitType, $targetDate);
-        
+
         return [
             'status' => 'success',
             'predictions' => $adjustedPredictions,
@@ -623,7 +644,7 @@ class PredictionModel
             'adjusted_weights' => $weights
         ];
     }
-    
+
     /**
      * Get prediction summary statistics for dashboard
      * 
@@ -636,18 +657,18 @@ class PredictionModel
         $result = $this->conn->query($sql);
         $row = $result->fetch_assoc();
         $totalPredictions = $row['total'];
-        
+
         // Get accuracy metrics
         $accuracyHistory = $this->getAccuracyHistory();
         $averageAccuracy = isset($accuracyHistory['overall_accuracy']) ? $accuracyHistory['overall_accuracy'] : 0;
-        
+
         // Get next draw date
         $lotteryData = new LotteryData($this->conn);
         $nextDrawDate = $lotteryData->getNextDrawDate();
-        
+
         // Get total data records
         $totalDataRecords = $lotteryData->getTotalRecords();
-        
+
         return [
             'total_predictions' => $totalPredictions,
             'average_accuracy' => $averageAccuracy,
@@ -655,7 +676,7 @@ class PredictionModel
             'total_data_records' => $totalDataRecords
         ];
     }
-    
+
     /**
      * Get accuracy history
      * 
@@ -665,37 +686,37 @@ class PredictionModel
     public function getAccuracyHistory($period = 'all')
     {
         $sql = "SELECT * FROM prediction_accuracy";
-        
+
         if ($period !== 'all') {
             $startDate = null;
             $today = new \DateTime();
-            
+
             switch ($period) {
                 case 'weekly':
                     $startDate = clone $today;
                     $startDate->modify('-7 days');
                     break;
-                
+
                 case 'monthly':
                     $startDate = clone $today;
                     $startDate->modify('-30 days');
                     break;
-                
+
                 case 'yearly':
                     $startDate = clone $today;
                     $startDate->modify('-365 days');
                     break;
             }
-            
+
             if ($startDate !== null) {
                 $sql .= " WHERE period_end >= '" . $startDate->format('Y-m-d') . "'";
             }
         }
-        
+
         $sql .= " ORDER BY period_end ASC";
-        
+
         $result = $this->conn->query($sql);
-        
+
         if (!$result) {
             return [
                 'status' => 'error',
@@ -703,24 +724,24 @@ class PredictionModel
                 'sql' => $sql
             ];
         }
-        
+
         $history = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $history[] = $row;
         }
-        
+
         // Calculate overall metrics
         $totalPredictions = 0;
         $totalCorrect = 0;
-        
+
         foreach ($history as $record) {
             $totalPredictions += $record['total_predictions'];
             $totalCorrect += $record['correct_predictions'];
         }
-        
+
         $overallAccuracy = ($totalPredictions > 0) ? ($totalCorrect / $totalPredictions) * 100 : 0;
-        
+
         return [
             'status' => 'success',
             'history' => $history,
@@ -728,6 +749,104 @@ class PredictionModel
             'total_predictions' => $totalPredictions,
             'total_correct' => $totalCorrect,
             'count' => count($history)
+        ];
+    }
+
+    public function getPredictionHistory($filters = [], $limit = 10, $offset = 0)
+    {
+        $sql = "SELECT lp.*, lr.first_prize, lr.first_prize_last3, lr.last3f, lr.last3b, lr.last2 
+            FROM lottery_predictions lp 
+            LEFT JOIN lotto_records lr ON lp.target_draw_date = lr.dateValue";
+
+        $whereConditions = [];
+
+        // Apply filters
+        if (!empty($filters['digit_type'])) {
+            $whereConditions[] = "lp.digit_type = '" . $this->conn->real_escape_string($filters['digit_type']) . "'";
+        }
+
+        if (!empty($filters['prediction_method'])) {
+            $whereConditions[] = "lp.prediction_type = '" . $this->conn->real_escape_string($filters['prediction_method']) . "'";
+        }
+
+        if (isset($filters['status'])) {
+            if ($filters['status'] === 'null') {
+                $whereConditions[] = "lp.was_correct IS NULL";
+            } else {
+                $whereConditions[] = "lp.was_correct = " . intval($filters['status']);
+            }
+        }
+
+        if (!empty($filters['start_date'])) {
+            $whereConditions[] = "lp.prediction_date >= '" . $this->conn->real_escape_string($filters['start_date']) . " 00:00:00'";
+        }
+
+        if (!empty($filters['end_date'])) {
+            $whereConditions[] = "lp.prediction_date <= '" . $this->conn->real_escape_string($filters['end_date']) . " 23:59:59'";
+        }
+
+        // Add WHERE clause if there are conditions
+        if (!empty($whereConditions)) {
+            $sql .= " WHERE " . implode(" AND ", $whereConditions);
+        }
+
+        // Get total count before applying limit
+        $countSql = "SELECT COUNT(*) as total FROM (" . $sql . ") as count_query";
+        $countResult = $this->conn->query($countSql);
+        $totalCount = 0;
+
+        if ($countResult && $row = $countResult->fetch_assoc()) {
+            $totalCount = $row['total'];
+        }
+
+        // Get total count of all predictions (unfiltered)
+        $totalAllSql = "SELECT COUNT(*) as total FROM lottery_predictions";
+        $totalAllResult = $this->conn->query($totalAllSql);
+        $totalAllPredictions = 0;
+
+        if ($totalAllResult && $row = $totalAllResult->fetch_assoc()) {
+            $totalAllPredictions = $row['total'];
+        }
+
+        // Add ORDER BY and LIMIT
+        $sql .= " ORDER BY lp.prediction_date DESC";
+        $sql .= " LIMIT " . intval($offset) . ", " . intval($limit);
+
+        $result = $this->conn->query($sql);
+
+        if (!$result) {
+            return [
+                'status' => 'error',
+                'message' => 'ข้อผิดพลาดในการสืบค้นฐานข้อมูล: ' . $this->conn->error,
+                'sql' => $sql
+            ];
+        }
+
+        $predictions = [];
+
+        while ($row = $result->fetch_assoc()) {
+            // Determine if prediction was correct
+            if ($row['target_draw_date'] <= date('Y-m-d') && isset($row[$row['digit_type']])) {
+                $actualDigit = $row[$row['digit_type']];
+                if ($row['was_correct'] === null) {
+                    $row['was_correct'] = ($row['predicted_digits'] === $actualDigit) ? 1 : 0;
+
+                    // Update database record
+                    $updateSql = "UPDATE lottery_predictions SET was_correct = ? WHERE prediction_id = ?";
+                    $stmt = $this->conn->prepare($updateSql);
+                    $stmt->bind_param("ii", $row['was_correct'], $row['prediction_id']);
+                    $stmt->execute();
+                }
+            }
+
+            $predictions[] = $row;
+        }
+
+        return [
+            'status' => 'success',
+            'predictions' => $predictions,
+            'total_count' => $totalCount,
+            'total_all_predictions' => $totalAllPredictions
         ];
     }
 }
