@@ -1,0 +1,438 @@
+/* 
+ * style.css
+ * 
+ * Main stylesheet for the Thai Lottery Analysis system
+ */
+
+/* Global Variables */
+:root {
+    --color-primary: #4e73df;
+    --color-secondary: #36b9cc;
+    --color-success: #1cc88a;
+    --color-info: #36b9cc;
+    --color-warning: #f6c23e;
+    --color-danger: #e74a3b;
+    --color-light: #f8f9fc;
+    --color-dark: #5a5c69;
+    --color-gray-100: #f8f9fc;
+    --color-gray-200: #eaecf4;
+    --color-gray-300: #dddfeb;
+    --color-gray-400: #d1d3e2;
+    --color-gray-500: #b7b9cc;
+    --color-gray-600: #858796;
+    --color-gray-700: #6e707e;
+    --color-gray-800: #5a5c69;
+    --color-gray-900: #3a3b45;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-800);
+}
+
+a {
+    text-decoration: none;
+    color: var(--color-primary);
+    transition: all 0.3s;
+}
+
+a:hover {
+    color: #2e59d9;
+    text-decoration: none;
+}
+
+.text-primary { color: var(--color-primary) !important; }
+.text-success { color: var(--color-success) !important; }
+.text-info { color: var(--color-info) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.text-danger { color: var(--color-danger) !important; }
+
+.bg-primary { background-color: var(--color-primary) !important; }
+.bg-success { background-color: var(--color-success) !important; }
+.bg-info { background-color: var(--color-info) !important; }
+.bg-warning { background-color: var(--color-warning) !important; }
+.bg-danger { background-color: var(--color-danger) !important; }
+
+.border-left-primary { border-left: 0.25rem solid var(--color-primary) !important; }
+.border-left-success { border-left: 0.25rem solid var(--color-success) !important; }
+.border-left-info { border-left: 0.25rem solid var(--color-info) !important; }
+.border-left-warning { border-left: 0.25rem solid var(--color-warning) !important; }
+.border-left-danger { border-left: 0.25rem solid var(--color-danger) !important; }
+
+/* Navbar */
+.navbar {
+    padding: 0.75rem 1rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.navbar-brand {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.navbar-nav .nav-item .nav-link {
+    padding: 0.75rem 1rem;
+    position: relative;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-item .nav-link.active {
+    font-weight: 700;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Footer */
+.footer {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+}
+
+/* Cards */
+.card {
+    border: none;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    border-radius: 0.35rem;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: var(--color-gray-100);
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: 0.75rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    background-color: var(--color-primary);
+    color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    transition: all 0.3s;
+    overflow-y: auto;
+}
+
+.sidebar.collapsed {
+    width: 6.5rem;
+}
+
+.sidebar-header {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+}
+
+.sidebar-user {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-user .user-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-user .user-name {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: white;
+}
+
+.sidebar-user .user-role {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+}
+
+.sidebar-menu {
+    padding: 0;
+    list-style: none;
+    margin-bottom: 0;
+}
+
+.sidebar-menu li {
+    width: 100%;
+}
+
+.sidebar-menu li a {
+    padding: 1rem 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    display: block;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.sidebar-menu li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sidebar-menu li.active a {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: 700;
+}
+
+.sidebar-menu li.menu-header {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 1rem;
+}
+
+.sidebar-menu li a i {
+    margin-right: 0.75rem;
+    width: 1.25rem;
+    text-align: center;
+}
+
+.sidebar-toggle {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1000;
+    display: none;
+}
+
+.sidebar-toggle button {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.content-wrapper {
+    margin-left: 250px;
+    padding: 1rem;
+    transition: all 0.3s;
+}
+
+.content-wrapper.expanded {
+    margin-left: 6.5rem;
+}
+
+/* Admin Dashboard */
+.admin-header {
+    margin-bottom: 1.5rem;
+}
+
+.admin-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.admin-header .breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+/* Prediction Cards */
+.prediction-card {
+    transition: all 0.3s;
+}
+
+.prediction-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+}
+
+.prediction-digit {
+    font-weight: 700;
+    color: var(--color-gray-800);
+}
+
+/* Data Tables */
+.table-responsive {
+    padding: 0;
+}
+
+.table thead th {
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-800);
+    border-bottom: 2px solid var(--color-gray-200);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05rem;
+}
+
+.table tbody tr:hover {
+    background-color: var(--color-gray-100);
+}
+
+/* Forms */
+.form-control {
+    border-radius: 0.35rem;
+    border: 1px solid var(--color-gray-300);
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.form-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--color-gray-700);
+}
+
+/* Buttons */
+.btn {
+    border-radius: 0.35rem;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+    background-color: #2e59d9;
+    border-color: #2e59d9;
+}
+
+.btn-success {
+    background-color: var(--color-success);
+    border-color: var(--color-success);
+}
+
+.btn-success:hover {
+    background-color: #15a97d;
+    border-color: #15a97d;
+}
+
+.btn-info {
+    background-color: var(--color-info);
+    border-color: var(--color-info);
+}
+
+.btn-info:hover {
+    background-color: #2ca1b7;
+    border-color: #2ca1b7;
+}
+
+.btn-warning {
+    background-color: var(--color-warning);
+    border-color: var(--color-warning);
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #dda20a;
+    border-color: #dda20a;
+    color: white;
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    border-color: var(--color-danger);
+}
+
+.btn-danger:hover {
+    background-color: #d52a1a;
+    border-color: #d52a1a;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+}
+
+/* Stat Cards */
+.stat-card {
+    position: relative;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    background-color: white;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+}
+
+.stat-card .stat-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-gray-600);
+    margin-bottom: 0.5rem;
+}
+
+.stat-card .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stat-card .stat-description {
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+}
+
+.stat-card .stat-icon {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 2rem;
+    opacity: 0.3;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .sidebar {
+        left: -250px;
+    }
+    
+    .sidebar.collapsed {
+        left: 0;
+    }
+    
+    .content-wrapper {
+        margin-left: 0;
+    }
+    
+    .content-wrapper.expanded {
+        margin-left: 0;
+    }
+    
+    .sidebar-toggle {
+        display: block;
+    }
+}
